@@ -1,28 +1,16 @@
-var projector;
+function core(domID) {
 
-$(document).ready(function () {
-    projector = new THREE.Projector();
-    new core();
-});
-
-function core() {
+    this.projector = new THREE.Projector();
     this.selection;
     this.mouseVector = new THREE.Vector3();
 
-    /*SCENE*/
-    var container = document.getElementById("container");
-    this.containerWidth = window.innerWidth,
-            this.containerHeight = window.innerHeight;
-    this.dom = $("#container");
-
     /*CAMERA*/
-    var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
-    camera.position.z = 1400;
-    camera.position.y = 0;
-    camera.position.y = -1000;
-    camera.rotation.x = (Math.PI / 2) * 0.8;
-    camera.position.z = 400;
-    this.camera = camera;
+    var c = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
+    c.position.y = 0;
+    c.position.y = -1000;
+    c.rotation.x = (Math.PI / 2) * 0.8;
+    c.position.z = 400;
+    this.camera = c;
 
     /*RENDER*/
     var renderer = new THREE.WebGLRenderer({antialias: true});
@@ -32,103 +20,100 @@ function core() {
     renderer.shadowMapType = THREE.PCFSoftShadowMap;
     renderer.sortObjects = false;
     this.renderer = renderer;
-    container.appendChild(this.renderer.domElement);
-    this.addStats();
 
-
-    var core = this;
-    this.dom.mousemove(function (e) {
-        core.mousemove(e);
-    });
-    this.dom.click(function (e) {
-        core.click(e);
-    });
-    window.onresize = function () {
-        core.onWindowResize();
+    /*CONTAINER*/
+    this.container = {
+        dom: document.getElementById(domID),
+        width: window.innerWidth,
+        height: window.innerHeight,
     };
 
-    this.grille = new grille();
-    this.grille.addFrog();
-    var ambiance = this.grille.addLightAmbiance();
-    var position = new THREE.Vector3(0, 0, 1400);
-    this.grille.buildSun(position, ambiance);
+    this.container.dom.appendChild(this.renderer.domElement);
+    this.container.dom.addEventListener("click", this.click.bind(this));
+    window.addEventListener("resize", this.onWindowResize.bind(this));
+ 
+    
+    /*STATS*/
+    this.addStats();
 
+    /*SCENE*/
+    this.scene = new THREE.Scene();
+    
 
-    this.grille.buildFloor();
-    this.grille.buildSphere();
-    this.grille.buildMap();
-
-    var position = new THREE.Vector3(0, 500, 0);
-    this.grille.buildMonster(position);
-
-    var position = new THREE.Vector3(200, -100, 0);
-    this.grille.buildMonster(position);
-
-
-    var position = new THREE.Vector3(500, -100, 0);
-    this.grille.buildMonster(position);
+    this.sceneFactory = new sceneFactory(this.scene);
+    
+    this.matrix = this.sceneFactory.buildFloor();
+    this.sun = this.sceneFactory.buildSun(new THREE.Vector3(0, 0, 1400));
+    
+    this.sceneFactory.addFrog();
+    this.sceneFactory.buildSphere();
+    
+    this.horses = new horseCollection(this.sceneFactory.horses,this.sceneFactory.decor,this.matrix,this.sceneFactory.errors);
+    this.horses.addHorse(new THREE.Vector3(0, 500, 0));
+    this.horses.addHorse(new THREE.Vector3(200, -100, 0));
+    this.horses.addHorse(new THREE.Vector3(500, -100, 0));
+    
+   
     this.render();
 }
 
-
 core.prototype.addStats = function () {
-    /*STATS*/
     stats = new Stats();
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.top = '0px';
-    container.appendChild(stats.domElement);
+    this.container.dom.appendChild(stats.domElement);
     this.stats = stats;
 }
 
 core.prototype.click = function (e) {
-    //Test if collision with  Horses (this.grille.monsters) Then focus Selection ( this.selection)
-    this.mouseVector.x = 2 * (e.clientX / this.containerWidth) - 1;
-    this.mouseVector.y = 1 - 2 * (e.clientY / this.containerHeight);
-    raycaster = projector.pickingRay(this.mouseVector.clone(), this.camera);
-    intersects = raycaster.intersectObjects(this.grille.monsters.children, true);
+    
+    var raycaster,intersects;
+    this.mouseVector.x = 2 * (e.clientX / this.container.width) - 1;
+    this.mouseVector.y = 1 - 2 * (e.clientY / this.container.height);
+    raycaster = this.projector.pickingRay(this.mouseVector.clone(), this.camera);
+    intersects = raycaster.intersectObjects(this.horses.horses.children, true);
+  
+    /**
+    * If mouse intersect a horse
+    */
     if (intersects[0]) {
         this.selection = intersects[0].object.parent.obj;
     }
 
-    //If Horse Selection Test if collision with floor (this.grille.floor)
+    /**
+     * If mouse intersect the floor
+     */
     if (this.selection) {
-        raycaster = projector.pickingRay(this.mouseVector.clone(), this.camera);
-        intersects = raycaster.intersectObjects(this.grille.floor.children);
+        raycaster = this.projector.pickingRay(this.mouseVector.clone(), this.camera);
+        intersects = raycaster.intersectObjects(this.sceneFactory.floor.children);
         if (intersects[0]) {
             var position = new THREE.Vector3(intersects[0].point.x, intersects[0].point.y, intersects[0].point.z);
             this.selection.setGoal(position);
         }
     }
-
 }
 
 
 core.prototype.onWindowResize = function () {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
+    this.container.x = window.innerWidth;
+    this.container.y = window.innerHeight;
     this.renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-core.prototype.mousemove = function (e) { }
-
-
-
+/**
+ * On keyframe
+ */
 core.prototype.render = function () {
-    this.grille.animateSun();
+    this.sun.animate();
+    this.horses.animate();
 
-    this.grille.animateMonsters();
-    core = this;
     window.requestAnimationFrame(function () {
-        core.render();
-    });
-
-
-    // SI STATS
-    if (core.stats) {
-        core.stats.update();
-    }
-
-    this.renderer.render(this.grille.scene, this.camera);
+        this.render();
+    }.bind(this));
+    this.stats && (this.stats.update());
+    this.renderer.render(this.scene, this.camera);
 }
 
 
