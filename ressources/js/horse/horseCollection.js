@@ -5,19 +5,13 @@ function horseCollection(horses,decor,matrix,errors) {
     this.decor = decor;
     this.collection = [];
     this.resolve = new horseResolver(this.horses,this.decor);
-
-}
-
-horseCollection.prototype.removeHorse = function () {
-
 }
 
 horseCollection.prototype.addHorse = function (position) {
-    new horse(position, this.matrix,this.resolve,this.errors, function (model,horse) {
-     
-        this.horses.add(model);
-        this.collection.push(horse);
-    }.bind(this));
+    new horse(position, this.matrix,this.resolve,this.errors).then(function(value){
+        this.horses.add(value.model);
+        this.collection.push(value.horse);
+    }.bind(this))
 }
 
 horseCollection.prototype.animate = function () {

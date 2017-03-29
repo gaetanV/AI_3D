@@ -88,6 +88,4 @@ sun.prototype.animate = function () {
 
     }
 }
-sun.prototype.remove = function () {
-    this.scene.remove(this.sun);
-}
+

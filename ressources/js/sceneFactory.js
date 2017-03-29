@@ -1,7 +1,8 @@
 function sceneFactory(scene) {
-
     this.scene = scene;
     this.floor = new THREE.Object3D();
+    this.floor.receiveShadow = true;
+   
     this.decor = new THREE.Object3D();
     this.horses = new THREE.Object3D();
     this.errors = new THREE.Object3D();
@@ -12,13 +13,15 @@ function sceneFactory(scene) {
 }
 
 sceneFactory.prototype.buildSun = function (position) {
-    var light = new THREE.SpotLight(0xffffff, 1);
+    var light = new THREE.SpotLight(0xffffff, 0.5);
     light.position.set(position.x, position.y, position.z);
     light.castShadow = true;
     light.shadowDarkness = 0.5;
     light.shadowCameraFov = 500;
     light.shadowMapWidth = 1024;
     light.shadowMapHeight = 1024;
+    light.penumbra= 1;
+
     light.target.position.set(position.x, position.y, 0);
     this.scene.add(light);
     return new sun(light);
@@ -31,8 +34,9 @@ sceneFactory.prototype.remove = function (object) {
 
 sceneFactory.prototype.buildFloor = function () {
     var m = new matrix();
-    
-    this.floor.add(m.buildFloor());
+    var sol =m.buildFloor() ;
+
+    this.floor.add(m.buildFloor(sol));
     var result = m.buildMap();
     result.decor.map(function (a) {
         this.decor.add(a);
@@ -42,13 +46,6 @@ sceneFactory.prototype.buildFloor = function () {
     }.bind(this));
     return  m;
 };
-
-sceneFactory.prototype.bulidObject3D = function () {
-    var t = new THREE.Object3D();
-    this.scene.add(t);
-    return t;
-}
-
 
 
 

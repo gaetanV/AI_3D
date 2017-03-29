@@ -1,7 +1,4 @@
 function matrix() {
-    
-    
-
     this.ressource = {
         texture : {
             snow : 'ressources/images/snow.jpg',
@@ -9,9 +6,7 @@ function matrix() {
         }
     }
 
-    /**
-     * Set some properties
-     */
+    //SET YOUR PROPERTIES
     this.pourcentage = 20; 
     this.sizeGrille = 100;
     this.xGrille = 10;
@@ -20,8 +15,7 @@ function matrix() {
 }
 
 
-
-/*BUILD MATRIX*/
+// BUILD CURVE MATRIX
 matrix.prototype.buildFloor = function () {
     var textureUrl = this.ressource.texture.snow;
     var texture = THREE.ImageUtils.loadTexture(textureUrl);
@@ -119,6 +113,8 @@ matrix.prototype.buildFloor = function () {
     return cube;
 }
 
+
+// MATCH THE POSITION Z
 matrix.prototype.returnZ = function (position) {
     x = Math.floor(position.x / this.matrixSize + this.matrix / 2);
     y = Math.floor(-position.y / this.matrixSize + this.matrix / 2);
@@ -148,7 +144,8 @@ matrix.prototype.returnZ = function (position) {
     return position;
 }
 
-/*RANDOM POINT*/
+
+// RANDOM POINT
 matrix.prototype.createMap = function (largeur, hauteur) {
     this.map = new Array(); 
     for (var i = 0; i < largeur; i++) {
@@ -172,9 +169,12 @@ matrix.prototype.buildMap = function () {
    var result = {
             decor:[],
             scene:[],
-      }
-    var buildCube = function (position){
+    }
       
+    /**
+    * Build Barriers
+    */
+    var buildBarriers = function (position){
         var texture = THREE.ImageUtils.loadTexture(this.ressource.texture.ebene);
         this.returnZ(position);
         var material = new THREE.MeshBasicMaterial({color: "red", transparent: true, opacity: 0});
@@ -185,7 +185,6 @@ matrix.prototype.buildMap = function () {
         object.position.x = position.x + this.sizeGrille / 2;
         object.rotation.z = Math.PI / 2;
         result.decor.push(object);
-     
         var gemCubeO = new THREE.BoxGeometry(this.sizeGrille / 20, this.sizeGrille, this.sizeGrille / 40);
         var material = new THREE.MeshPhongMaterial({map: texture, color: 0xffffff, shininess: 0});
         for (var i = 0; i < 10; i++) {
@@ -204,17 +203,14 @@ matrix.prototype.buildMap = function () {
         return result;
     }.bind(this);
     
- 
     this.createMap(this.xGrille,this.yGrille);
     for (var i = 0; i < this.xGrille; i++) {
         for (var j = 0; j < this.yGrille; j++) {
             if (this.map[i][j] === 1) {
                 var position = new THREE.Vector3();
-                
                 position.x = (j * this.sizeGrille) - (this.xGrille * this.sizeGrille) / 2;
                 position.y = (i * this.sizeGrille) - (this.yGrille * this.sizeGrille) / 2;
-                buildCube(position);
-                
+                buildBarriers(position);
             }
         }
     }

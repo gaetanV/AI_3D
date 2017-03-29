@@ -1,12 +1,12 @@
 function horseResolver(horses, decor) {
     this.horses = horses;
     this.decor = decor;
-    this.selfCollision = true;
-
 }
 
-
 horseResolver.prototype.decorCollision = function (collisionObject, distance) {
+    /**
+    * IF CROSS
+    */
     for (var i = 0; i < collisionObject.collisionPoints.length; i++) {
         var raycaster = new THREE.Raycaster(collisionObject.collisionPoints[i], collisionObject.orientation);
         raycaster.far = distance;
@@ -23,7 +23,7 @@ horseResolver.prototype.horseCollision = function (horse) {
 
     for (var j = 0; j < this.horses.children.length; j++) {
         var horseBis = this.horses.children[j].obj;
-        if (horseBis != horse) {
+        if (horseBis !== horse) {
             var p = (horse.moveY / horse.moveX * horse.speed.Delta);
             var pbis = (horseBis.moveY / horseBis.moveX * horse.speed.Delta);
             var dy = horse.model.position.y - horseBis.model.position.y;
@@ -38,30 +38,28 @@ horseResolver.prototype.horseCollision = function (horse) {
 
             var sign4 = horseBis.moveX * horse.speed.Delta > 0 ? 1 : horseBis.moveX * horse.speed.Delta < 0 ? -1 : 0;
             var sign3 = newX - horseBis.model.position.x > 0 ? 1 : newX - horseBis.model.position.x < 0 ? -1 : 0;
-
-
+            
+            // IF SAME DIRECTION 
             if (sign == sign2 && sign3 == sign4) {
                 var objectif = horse.goal[horse.goal.length - 1];
-                var objectifBis = horseBis.goal[horse.goal.length - 1];
+               // var objectifBis = horseBis.goal[horse.goal.length - 1];
                 var positionCross = new THREE.Vector3(newX, newY, 0);
-
-                //   if(sign==sign2){
                 var crossDiff = (positionCross.x - horse.model.position.x);
                 var crossBissDiff = (positionCross.x - horseBis.model.position.x);
 
                 var objectifDiff = (objectif.x - horse.model.position.x);
                 var objectifBissDiff = (objectif.x - horseBis.model.position.x);
 
-                //ON TEST SI CROSS EST AVANT L'OBJECTIF
+                 // IF CROSSING IS BEFORE THE GOAL
                 if (crossDiff < objectifDiff && crossBissDiff < objectifBissDiff) {
-                    //ON TEST SI IL PEUVENT SE CROISER
+
+                    // IF REAL CROSS WITH SPEED
                     var nbMoveBiss = Math.abs(crossBissDiff / horseBis.moveX * horse.speed.Min);
                     var nbMove = Math.abs(crossDiff / horse.moveX * horse.speed.Min);
-                    //   console.log("nbMove"+nbMove+" NB" +(x/horse.moveX) );
-                    //LONGEUR DU CHEVAL
+                    
+                    // IF REAL CROSS WITH HORSE LENGTH 
                     if (Math.abs(nbMoveBiss - nbMove) < 30 * horse.moveX * horse.speed.Min) {
                         return positionCross;
-
                     }
                 }
             }
