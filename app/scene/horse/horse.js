@@ -1,16 +1,24 @@
+MATERIAL.set(horse, {
+    modelJson: {
+         horse: "scene/horse/model/horse.js",
+    },
+    material: {
+         horse : new THREE.MeshBasicMaterial({color: 0x000000, morphTargets: true}),
+         error : new THREE.MeshBasicMaterial({color: "white"})
+    },
+});
+
+
 function horse(position, matrix, resolver, errors) {
 
+    this.jsonModel = MATERIAL.get(horse).modelJson;
+    this.material  = MATERIAL.get(horse).material;
+    
     this.matrix = matrix;
     this.resolver = resolver;
     this.errors = errors;
 
     this.selfCollision = true;
-
-    this.ressource = {
-        model: {
-            horse: "scene/horse/model/horse.js",
-        }
-    }
 
     //SPEED
     this.speed = {
@@ -36,32 +44,22 @@ function horse(position, matrix, resolver, errors) {
     this.lastKeyframe = 0; // previous keyframe
     this.currentKeyframe = 0;
 
-    var loader = new THREE.JSONLoader();
-    
-    return new Promise((resolve, reject) => {
-        // LOAD THE MODEL
-        loader.load(this.ressource.model.horse, function (geometry) {
-            var animatedMesh;
-            var material2 = new THREE.MeshBasicMaterial({color: 0x000000, morphTargets: true, shininess: 0});
-            animatedMesh = new THREE.Mesh(geometry, material2);
-            animatedMesh.scale.set(0.2, 0.2, 0.2);
-            animatedMesh.castShadow = true;
-            animatedMesh.rotation.z = Math.PI / 2;
-            animatedMesh.rotation.y = Math.PI / 2;
-            var group = new THREE.Object3D();
-            group.add(animatedMesh);
-            group.model = animatedMesh;
-            group.obj = this;
-            group.position.set(position.x, position.y, position.z);
-            this.mesh = animatedMesh;
-            this.model = group;
-            this.setGoal(new THREE.Vector3(0, 0, 0));
-            resolve({model: group, horse: this});
+    // LOAD THE MODEL
+    var animatedMesh;
+    animatedMesh = new THREE.Mesh(this.jsonModel.horse, this.material.horse);
+    animatedMesh.scale.set(0.2, 0.2, 0.2);
+    animatedMesh.castShadow = true;
+    animatedMesh.rotation.z = Math.PI / 2;
+    animatedMesh.rotation.y = Math.PI / 2;
+    var group = new THREE.Object3D();
+    group.add(animatedMesh);
+    group.model = animatedMesh;
+    group.obj = this;
+    group.position.set(position.x, position.y, position.z);
+    this.mesh = animatedMesh;
+    this.model = group;
+    this.setGoal(new THREE.Vector3(0, 0, 0));
 
-
-        }.bind(this));
-
-    })
 }
 
 
@@ -124,7 +122,7 @@ horse.prototype.moveZ = function () {
 
 
 horse.prototype.anglePosition = function (angle, positionObj) {
-    
+
     var xGoalTemp = positionObj.x - this.model.position.x;
     var yGoalTemp = positionObj.y - this.model.position.y;
 
@@ -145,25 +143,25 @@ horse.prototype.animate = function () {
     switch ((this.etat)) {
 
         case 0:
-             // NO MOVE
+            // NO MOVE
             break;
         case 1:
-             // OBJECTIF
+        // OBJECTIF
         case 2:
-             // PAS D'OBJECTIF 
+            // PAS D'OBJECTIF 
             this.ZMove && (this.moveZ());
 
             this.model.position.x += this.moveX * this.speed.Delta;
             this.model.position.y += this.moveY * this.speed.Delta;
-            
-             //  OFF ROAD
+
+            //  OFF ROAD
             if (this.model.position.y > (this.matrix.sizeGrille * this.matrix.yGrille / 2) || this.model.position.y < -(this.matrix.sizeGrille * this.matrix.yGrille) / 2 || this.model.position.x > (this.matrix.sizeGrille * this.matrix.xGrille / 2) || this.model.position.x < -(this.matrix.sizeGrille * this.matrix.xGrille) / 2) {
                 var position = new THREE.Vector3(0, 0, 0);
                 this.setGoal(position);
                 this.etat = 2;
             }
-            
-             // YOU HAVE REACHED YOUR OBJECTIVE
+
+            // YOU HAVE REACHED YOUR OBJECTIVE
             if (Math.abs(Math.floor(this.model.position.x) - this.currentGoal.x + Math.floor(this.model.position.y) - this.currentGoal.y) <= this.speed.Delta) {
                 this.popGoal();
             }
@@ -277,8 +275,8 @@ horse.prototype.initSens = function (position) {
 
 horse.prototype.error = function (position) {
     gemCube = new THREE.BoxGeometry(5, 5, 1000);
-    var material = new THREE.MeshBasicMaterial({color: "white"});
-    var object = new THREE.Mesh(gemCube, material);
+   
+    var object = new THREE.Mesh(gemCube, this.material.error);
     object.position.z = position.z;
     object.position.y = position.y;
     object.position.x = position.x;

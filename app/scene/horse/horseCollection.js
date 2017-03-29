@@ -8,10 +8,10 @@ function horseCollection(horses,decor,matrix,errors) {
 }
 
 horseCollection.prototype.addHorse = function (position) {
-    new horse(position, this.matrix,this.resolve,this.errors).then(function(value){
-        this.horses.add(value.model);
-        this.collection.push(value.horse);
-    }.bind(this))
+    var pHorse = new horse(position, this.matrix,this.resolve,this.errors);
+    this.horses.add(pHorse.model);
+    this.collection.push(pHorse);
+            
 }
 
 horseCollection.prototype.animate = function () {

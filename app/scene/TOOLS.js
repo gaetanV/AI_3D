@@ -1,6 +1,8 @@
 TOOLS = function () {
     var nybHexString = "0123456789ABCDEF";
     var texloader = new THREE.TextureLoader();
+    var jsonLoader = new THREE.JSONLoader();
+    
     return {
         loader: {
             texture: (load) => {
@@ -12,8 +14,8 @@ TOOLS = function () {
                     }
                 }
                 return new Promise((resolve) => {
-                    var textureResolve = {}
-                    var i = 0;
+                    var textureResolve = {};
+                    var i;
                     var iterator = thread();
                     for  (i in load) {
                         texloader.load(load[i], function (texture) {
@@ -22,7 +24,28 @@ TOOLS = function () {
                         }.bind({i:i}));
                     }
                 });
-            }
+            },
+            json: (load) => {
+                
+                var size = Object.keys(load).length - 1;        
+                function* thread() {
+                    var index = 0;
+                    while (index < size ) {
+                        yield index++;
+                    }
+                }
+                return new Promise((resolve) => {
+                    var jsonResolve = {};
+                    var i;
+                    var iterator = thread();
+                    for  (i in load) {
+                        jsonLoader.load(load[i], function (texture) {
+                            jsonResolve[this.i] = texture;
+                            iterator.next().done === true && (resolve(jsonResolve));
+                        }.bind({i:i}));
+                    }
+                });
+            },
         },
         color: {
             byte2Hex: (n) => {

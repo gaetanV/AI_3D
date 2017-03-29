@@ -43,23 +43,17 @@ function core(domID) {
     this.container.dom.appendChild(this.renderer.domElement);
 
     // SCENE
-
-    
-    MATRIX().then(function (matrix) {
-        this.scene = new THREE.Scene();
-        this.sceneFactory = new sceneFactory(this.scene);
-        this.matrix = this.sceneFactory.buildFloor(new matrix());
-        this.sun = this.sceneFactory.buildSun(new THREE.Vector3(0, 0, 700));
-        this.sceneFactory.addFrog();
-        this.sceneFactory.buildSphere();
-        this.horses = new horseCollection(this.sceneFactory.horses, this.sceneFactory.decor, this.matrix, this.sceneFactory.errors);
-        this.horses.addHorse(new THREE.Vector3(0, 500, 0));
-        this.horses.addHorse(new THREE.Vector3(200, -100, 0));
-        this.horses.addHorse(new THREE.Vector3(500, -100, 0));
-        this.render();
-    }.bind(this));
-
-
+    this.scene = new THREE.Scene();
+    this.sceneFactory = new sceneFactory(this.scene);
+    this.matrix = this.sceneFactory.buildFloor(new matrix());
+    this.sun = this.sceneFactory.buildSun(new THREE.Vector3(0, 0, 700));
+    this.sceneFactory.addFrog();
+    this.sceneFactory.buildSphere();
+    this.horses = new horseCollection(this.sceneFactory.horses, this.sceneFactory.decor, this.matrix, this.sceneFactory.errors);
+    this.horses.addHorse(new THREE.Vector3(0, 500, 0));
+    this.horses.addHorse(new THREE.Vector3(200, -100, 0));
+    this.horses.addHorse(new THREE.Vector3(500, -100, 0));
+    this.render();
 }
 
 core.prototype.addStats = function () {
