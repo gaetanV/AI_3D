@@ -1,8 +1,6 @@
 function sceneFactory(scene) {
     this.scene = scene;
     this.floor = new THREE.Object3D();
-    this.floor.receiveShadow = true;
-   
     this.decor = new THREE.Object3D();
     this.horses = new THREE.Object3D();
     this.errors = new THREE.Object3D();
@@ -13,29 +11,13 @@ function sceneFactory(scene) {
 }
 
 sceneFactory.prototype.buildSun = function (position) {
-    var light = new THREE.SpotLight(0xffffff, 0.5);
-    light.position.set(position.x, position.y, position.z);
-    light.castShadow = true;
-    light.shadowDarkness = 0.5;
-    light.shadowCameraFov = 500;
-    light.shadowMapWidth = 1024;
-    light.shadowMapHeight = 1024;
-    light.penumbra= 1;
-
-    light.target.position.set(position.x, position.y, 0);
-    this.scene.add(light);
-    return new sun(light);
+    var pSun = new sun(position);
+    this.scene.add(pSun.model);
+    return pSun.interface;
 }
 
-sceneFactory.prototype.remove = function (object) {
-    this.scene.remove(object);
-}
-
-
-sceneFactory.prototype.buildFloor = function () {
-    var m = new matrix();
-    var sol =m.buildFloor() ;
-
+sceneFactory.prototype.buildFloor = function (m) {
+    var sol = m.buildFloor();
     this.floor.add(m.buildFloor(sol));
     var result = m.buildMap();
     result.decor.map(function (a) {
@@ -44,10 +26,8 @@ sceneFactory.prototype.buildFloor = function () {
     result.scene.map(function (a) {
         this.scene.add(a);
     }.bind(this));
-    return  m;
+    return m;
 };
-
-
 
 sceneFactory.prototype.buildSphere = function () {
     var maxsize;

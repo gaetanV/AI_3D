@@ -1,4 +1,4 @@
-function horse(position, matrix, resolver, errors, callback) {
+function horse(position, matrix, resolver, errors) {
 
     this.matrix = matrix;
     this.resolver = resolver;
@@ -8,7 +8,7 @@ function horse(position, matrix, resolver, errors, callback) {
 
     this.ressource = {
         model: {
-            horse: "ressources/model/horse.js",
+            horse: "scene/horse/model/horse.js",
         }
     }
 
@@ -268,7 +268,7 @@ horse.prototype.initSens = function (position) {
     this.moveX = orientation.x;
     this.moveY = orientation.y;
     if (this.selfCollision) {
-        var intersect = this.resolver.horseCollision(this);
+        var intersect = this.resolver.horseCollisionPredict(this);
         if (intersect) {
             this.error(intersect);
         }

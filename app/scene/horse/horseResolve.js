@@ -19,7 +19,7 @@ horseResolver.prototype.decorCollision = function (collisionObject, distance) {
 }
 
 
-horseResolver.prototype.horseCollision = function (horse) {
+horseResolver.prototype.horseCollisionPredict = function (horse) {
 
     for (var j = 0; j < this.horses.children.length; j++) {
         var horseBis = this.horses.children[j].obj;
