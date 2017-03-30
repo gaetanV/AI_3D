@@ -1,12 +1,20 @@
 MATERIAL.set(matrix, {
     texture: {
-        foor: 'scene/map/images/snow.jpg',
-        ebene: 'scene/map/images/ebene.jpg'
+        floor: 'scene/map/images/snow.jpg',
+        fence: 'scene/map/images/ebene.jpg'
     },
     material: {
         floor: {
             type: "MeshPhongMaterial",
             option: {map: "floor", shininess: 50}
+        },
+        fake: {
+            type: "MeshBasicMaterial",
+            option: {color: "red", transparent: true, opacity: 0}
+        },
+        fence:{
+            type: "MeshPhongMaterial",
+            option: {map: "fence", color: 0xffffff, shininess: 0}
         }
     }
 });
@@ -18,59 +26,45 @@ function  matrix() {
     this.material = MATERIAL.get(matrix).material;
     this.pourcentage = 20;
     this.sizeGrille = 100;
-    this.xGrille = 10;
-    this.yGrille = 10;
+    this.x = 10;
+    this.y = this.x;
+    this.length = this.sizeGrille * this.x;
     this.map = new Array();
-    
-    
-    // GRILL SUB DIVISION 
+
     this.nbSub = 3;
-    
-    // GRILL SUB DIVISION 
     this.nbRandom = 6;
-    
-   
+
 }
-
-
 
 // BUILD CURVE MATRIX
 matrix.prototype.buildFloor = function () {
 
-    var sub = Math.pow(2, this.nbSub) - 1;
 
+    var sub = Math.pow(2, this.nbSub) - 1;
+    this.matrixSize = (this.length / (this.matrix)) + 50;
     this.matrix = 1 + this.nbRandom * (1 + sub);
-    longeur = this.sizeGrille * this.xGrille;
-    this.matrixSize = (longeur / (this.matrix)) + 50;
     var geometry = new THREE.Geometry();
-    var sGrille = new Array();
-    for (var i = 0; i < (this.nbRandom + 1); i++) {
-        sGrille[i] = new Array();
-        for (var j = 0; j < (this.nbRandom + 1); j++) {
-            hauteur = Math.floor(Math.random() * 200);
-            sGrille[i][j] = hauteur;
-        }
-    }
-   
-    this.tGrille = new Array();
+
+    var grid = new Array();
     for (var i = 0; i < this.matrix; i++) {
-        this.tGrille[i] = new Array();
+        grid[i] = new Array();
         for (var j = 0; j < this.matrix; j++) {
             var hauteur = 0;
             var position = new THREE.Vector3(0, 0, 0);
             if (j % (1 + sub) === 0 && i % (1 + sub) === 0) {
-                var hauteur = sGrille[i / (1 + sub)][j / (1 + sub)];
+                hauteur = Math.floor(Math.random() * 200);
             }
             position.z = hauteur;
             position.x = this.matrixSize * (j - this.matrix / 2);
             position.y = -this.matrixSize * (i - this.matrix / 2);
-            this.tGrille[i][j] = position;
-            geometry.vertices.push(this.tGrille[i][j]);
+            grid[i][j] = position;
+            geometry.vertices.push(grid[i][j]);
         }
     }
-    
-    
+
     var nbSubTemp = this.nbSub;
+
+
     var courbe = 0.75;
     var diffraction = 0.25 / this.nbSub;
     for (var s = 0; s < this.nbSub; s++) {
@@ -80,31 +74,34 @@ matrix.prototype.buildFloor = function () {
         nbSubTemp--;
         for (var i = 0; i < this.matrix; i += step / 2) {
             for (var j = 0; j < this.matrix; j += step / 2) {
-                y = i % (1 + sub);
-                x = j % (1 + sub);
-                pY = Math.floor(i / (1 + sub));
-                pX = Math.floor(j / (1 + sub));
+                var y = i % (1 + sub);
+                var x = j % (1 + sub);
+                var pY = Math.floor(i / (1 + sub));
+                var pX = Math.floor(j / (1 + sub));
                 if (x === 0 && y === step / 2) {
-                    var A = this.tGrille[pY * step][pX * step];
-                    var B = this.tGrille[(pY + 1) * step][pX * step];
-                    this.tGrille[i][j].z = (B.z + ((A.z - B.z) * courbe));
+                    var A = grid[pY * step][pX * step];
+                    var B = grid[(pY + 1) * step][pX * step];
+                    grid[i][j].z = (B.z + ((A.z - B.z) * courbe));
                 }
                 if (x === step / 2 && y === 0) {
-                    var A = this.tGrille[pY * step][pX * step];
-                    var B = this.tGrille[pY * step][(pX + 1) * step];
-                    this.tGrille[i][j].z = (B.z + ((A.z - B.z) * courbe));
+                    var A = grid[pY * step][pX * step];
+                    var B = grid[pY * step][(pX + 1) * step];
+                    grid[i][j].z = (B.z + ((A.z - B.z) * courbe));
                 }
                 if (x === step / 2 && y === step / 2) {
-                    var A = this.tGrille[(pY + 1) * step][pX * step];
-                    var B = this.tGrille[pY * step][(pX + 1) * step];
-                    var C = this.tGrille[pY * step][(pX) * step];
-                    var D = this.tGrille[(pY + 1) * step][(pX + 1) * step];
-                    courbeT = courbe - 2 * diffraction;
-                    this.tGrille[i][j].z = ((B.z + ((A.z - B.z) * courbeT)) + (C.z + ((D.z - C.z) * courbeT))) / 2;
+                    var A = grid[(pY + 1) * step][pX * step];
+                    var B = grid[pY * step][(pX + 1) * step];
+                    var C = grid[pY * step][(pX) * step];
+                    var D = grid[(pY + 1) * step][(pX + 1) * step];
+                    var courbeT = courbe - 2 * diffraction;
+                    grid[i][j].z = ((B.z + ((A.z - B.z) * courbeT)) + (C.z + ((D.z - C.z) * courbeT))) / 2;
                 }
             }
         }
     }
+
+    this.grid = grid;
+
     for (var i = 0; i < (this.matrix - 1); i++) {
         for (var j = 0; j < (this.matrix - 1); j++) {
             var point1 = j + (this.matrix) * i;
@@ -141,13 +138,13 @@ matrix.prototype.returnZ = function (position) {
         var xDiff = (this.matrix / 2 * this.matrixSize + position.x) % this.matrixSize;
         var yDiff = (this.matrix / 2 * this.matrixSize - position.y) % this.matrixSize;
         if (xDiff + yDiff < this.matrixSize) {
-            var A = this.tGrille[y][x];
-            var B = this.tGrille[y][x + 1];
-            var C = this.tGrille[y + 1][x];
+            var A = this.grid[y][x];
+            var B = this.grid[y][x + 1];
+            var C = this.grid[y + 1][x];
         } else {
-            var A = this.tGrille[y][x + 1];
-            var B = this.tGrille[y + 1][x];
-            var C = this.tGrille[y + 1][x + 1];
+            var A = this.grid[y][x + 1];
+            var B = this.grid[y + 1][x];
+            var C = this.grid[y + 1][x + 1];
         }
         var AB = new THREE.Vector3(B.x - A.x, B.y - A.y, B.z - A.z);
         var AC = new THREE.Vector3(C.x - A.x, C.y - A.y, C.z - A.z);
@@ -162,7 +159,6 @@ matrix.prototype.returnZ = function (position) {
     }
     return position;
 }
-
 
 // RANDOM POINT
 matrix.prototype.createMap = function (largeur, hauteur) {
@@ -185,6 +181,7 @@ matrix.prototype.createMap = function (largeur, hauteur) {
 
 
 matrix.prototype.buildMap = function () {
+
     var result = {
         decor: [],
         scene: [],
@@ -196,18 +193,16 @@ matrix.prototype.buildMap = function () {
     var buildBarriers = function (position) {
         var texture = this.texture.ebene;
         this.returnZ(position);
-        var material = new THREE.MeshBasicMaterial({color: "red", transparent: true, opacity: 0});
         var gemCube = new THREE.BoxGeometry(this.sizeGrille / 10, this.sizeGrille, 800);
-        var object = new THREE.Mesh(gemCube, material);
+        var object = new THREE.Mesh(gemCube, this.material.fake);
         object.position.z = 0;
         object.position.y = position.y;
         object.position.x = position.x + this.sizeGrille / 2;
         object.rotation.z = Math.PI / 2;
         result.decor.push(object);
         var gemCubeO = new THREE.BoxGeometry(this.sizeGrille / 20, this.sizeGrille, this.sizeGrille / 40);
-        var material = new THREE.MeshPhongMaterial({map: texture, color: 0xffffff, shininess: 0});
         for (var i = 0; i < 10; i++) {
-            var object = new THREE.Mesh(gemCubeO, material);
+            var object = new THREE.Mesh(gemCubeO, this.material.fence);
             var positionTemp = position.clone();
             positionTemp.x += i * (this.sizeGrille / 10)
             this.returnZ(positionTemp);
@@ -217,18 +212,17 @@ matrix.prototype.buildMap = function () {
             object.rotation.x = Math.PI / 2;
             object.castShadow = true;
             result.scene.push(object);
-
         }
         return result;
     }.bind(this);
 
-    this.createMap(this.xGrille, this.yGrille);
-    for (var i = 0; i < this.xGrille; i++) {
-        for (var j = 0; j < this.yGrille; j++) {
+    this.createMap(this.x, this.y);
+    for (var i = 0; i < this.x; i++) {
+        for (var j = 0; j < this.y; j++) {
             if (this.map[i][j] === 1) {
                 var position = new THREE.Vector3();
-                position.x = (j * this.sizeGrille) - (this.xGrille * this.sizeGrille) / 2;
-                position.y = (i * this.sizeGrille) - (this.yGrille * this.sizeGrille) / 2;
+                position.x = (j * this.sizeGrille) - (this.x * this.sizeGrille) / 2;
+                position.y = (i * this.sizeGrille) - (this.y * this.sizeGrille) / 2;
                 buildBarriers(position);
             }
         }

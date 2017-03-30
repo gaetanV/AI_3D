@@ -43,6 +43,8 @@ function core(domID) {
     this.container.dom.appendChild(this.renderer.domElement);
 
     // SCENE
+
+
     this.scene = new THREE.Scene();
     this.sceneFactory = new sceneFactory(this.scene);
     this.matrix = this.sceneFactory.buildFloor(new matrix());

@@ -2,14 +2,14 @@ TOOLS = function () {
     var nybHexString = "0123456789ABCDEF";
     var texloader = new THREE.TextureLoader();
     var jsonLoader = new THREE.JSONLoader();
-    
+
     return {
         loader: {
             texture: (load) => {
-                var size = Object.keys(load).length - 1;        
+                var size = Object.keys(load).length - 1;
                 function* thread() {
                     var index = 0;
-                    while (index < size ) {
+                    while (index < size) {
                         yield index++;
                     }
                 }
@@ -17,20 +17,20 @@ TOOLS = function () {
                     var textureResolve = {};
                     var i;
                     var iterator = thread();
-                    for  (i in load) {
+                    for (i in load) {
                         texloader.load(load[i], function (texture) {
                             textureResolve[this.i] = texture;
                             iterator.next().done === true && (resolve(textureResolve));
-                        }.bind({i:i}));
+                        }.bind({i: i}));
                     }
                 });
             },
             json: (load) => {
-                
-                var size = Object.keys(load).length - 1;        
+
+                var size = Object.keys(load).length - 1;
                 function* thread() {
                     var index = 0;
-                    while (index < size ) {
+                    while (index < size) {
                         yield index++;
                     }
                 }
@@ -38,11 +38,11 @@ TOOLS = function () {
                     var jsonResolve = {};
                     var i;
                     var iterator = thread();
-                    for  (i in load) {
+                    for (i in load) {
                         jsonLoader.load(load[i], function (texture) {
                             jsonResolve[this.i] = texture;
                             iterator.next().done === true && (resolve(jsonResolve));
-                        }.bind({i:i}));
+                        }.bind({i: i}));
                     }
                 });
             },

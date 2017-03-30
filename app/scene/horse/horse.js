@@ -14,7 +14,6 @@ MATERIAL.set(horse, {
     },
 });
 
-
 function horse(position, matrix, resolver, errors) {
 
     this.jsonModel = MATERIAL.get(horse).modelJson;
@@ -152,7 +151,7 @@ horse.prototype.animate = function () {
             // NO MOVE
             break;
         case 1:
-        // OBJECTIF
+            // OBJECTIF
         case 2:
             // PAS D'OBJECTIF 
             this.ZMove && (this.moveZ());
@@ -161,7 +160,7 @@ horse.prototype.animate = function () {
             this.model.position.y += this.moveY * this.speed.Delta;
 
             //  OFF ROAD
-            if (this.model.position.y > (this.matrix.sizeGrille * this.matrix.yGrille / 2) || this.model.position.y < -(this.matrix.sizeGrille * this.matrix.yGrille) / 2 || this.model.position.x > (this.matrix.sizeGrille * this.matrix.xGrille / 2) || this.model.position.x < -(this.matrix.sizeGrille * this.matrix.xGrille) / 2) {
+            if (this.model.position.y > (this.matrix.sizeGrille * this.matrix.y / 2) || this.model.position.y < -(this.matrix.sizeGrille * this.matrix.y) / 2 || this.model.position.x > (this.matrix.sizeGrille * this.matrix.x / 2) || this.model.position.x < -(this.matrix.sizeGrille * this.matrix.x) / 2) {
                 var position = new THREE.Vector3(0, 0, 0);
                 this.setGoal(position);
                 this.etat = 2;
