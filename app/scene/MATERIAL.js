@@ -1,18 +1,19 @@
 MATERIAL = function () {
     var boot = false;
-    
+
     var tasks = {
-        modelJson:{},
-        texture:{},
+        modelJson: {},
+        texture: {},
+        material: {},
     }
-    
+
     var complete = {}
-    function result(){
+    function result() {
         this.texture = {};
         this.modelJson = {};
         this.material = {};
     }
-    
+
     return {
         set: (entity, option) => {
             for (var i in option) {
@@ -24,8 +25,7 @@ MATERIAL = function () {
                         tasks.modelJson[entity] = option[i];
                         break;
                     case "material":
-                        !complete[entity] && (complete[entity] = new result());
-                        complete[entity].material = option[i];
+                        tasks.material[entity] = option[i];
                         break;
                     default:
                         throw "option not yet supported";
@@ -40,7 +40,7 @@ MATERIAL = function () {
 
         },
         boot: (resolve) => {
-            var size = Object.keys(tasks.texture).length + Object.keys(tasks.modelJson).length;
+            var size = Object.keys(tasks.texture).length + Object.keys(tasks.modelJson).length + Object.keys(tasks.material).length ;
             size === 0 && resolve();
             function* thread() {
                 var index = 0;
@@ -69,6 +69,24 @@ MATERIAL = function () {
                     }
                 }.bind({a: a}));
             }
+            for (var a in tasks.material) {
+                !complete[a] && (complete[a] = new result());
+                var b = tasks.material[a];
+                complete[a].material = {};
+                for (var i in b) {
+                    var c = b[i];
+                    if(c.option.map){
+                        c.option.map =  complete[a].texture[c.option.map];   
+                    }
+                    complete[a].material[i] = new THREE[c.type](c.option);
+                    
+                }
+                if (iterator.next().done === true) {
+                        boot = true;
+                        resolve();
+                    }
+            }
+
         }
     };
 

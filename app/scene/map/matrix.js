@@ -1,7 +1,13 @@
 MATERIAL.set(matrix, {
-    texture:{
-        snow: 'scene/map/images/snow.jpg',
+    texture: {
+        foor: 'scene/map/images/snow.jpg',
         ebene: 'scene/map/images/ebene.jpg'
+    },
+    material: {
+        floor: {
+            type: "MeshPhongMaterial",
+            option: {map: "floor", shininess: 50}
+        }
     }
 });
 
@@ -9,11 +15,21 @@ function  matrix() {
 
     //SET YOUR PROPERTIES
     this.texture = MATERIAL.get(matrix).texture;
+    this.material = MATERIAL.get(matrix).material;
     this.pourcentage = 20;
     this.sizeGrille = 100;
     this.xGrille = 10;
     this.yGrille = 10;
     this.map = new Array();
+    
+    
+    // GRILL SUB DIVISION 
+    this.nbSub = 3;
+    
+    // GRILL SUB DIVISION 
+    this.nbRandom = 6;
+    
+   
 }
 
 
@@ -21,22 +37,21 @@ function  matrix() {
 // BUILD CURVE MATRIX
 matrix.prototype.buildFloor = function () {
 
-    var mat = new THREE.MeshPhongMaterial({map: this.texture.snow, shininess: 50});
-    var nbSub = 3;
-    var sub = Math.pow(2, nbSub) - 1;
-    var nbRandom = 6;
-    this.matrix = 1 + nbRandom * (1 + sub);
+    var sub = Math.pow(2, this.nbSub) - 1;
+
+    this.matrix = 1 + this.nbRandom * (1 + sub);
     longeur = this.sizeGrille * this.xGrille;
     this.matrixSize = (longeur / (this.matrix)) + 50;
     var geometry = new THREE.Geometry();
     var sGrille = new Array();
-    for (var i = 0; i < (nbRandom + 1); i++) {
+    for (var i = 0; i < (this.nbRandom + 1); i++) {
         sGrille[i] = new Array();
-        for (var j = 0; j < (nbRandom + 1); j++) {
+        for (var j = 0; j < (this.nbRandom + 1); j++) {
             hauteur = Math.floor(Math.random() * 200);
             sGrille[i][j] = hauteur;
         }
     }
+   
     this.tGrille = new Array();
     for (var i = 0; i < this.matrix; i++) {
         this.tGrille[i] = new Array();
@@ -53,10 +68,12 @@ matrix.prototype.buildFloor = function () {
             geometry.vertices.push(this.tGrille[i][j]);
         }
     }
-    var nbSubTemp = nbSub;
+    
+    
+    var nbSubTemp = this.nbSub;
     var courbe = 0.75;
-    var diffraction = 0.25 / nbSub;
-    for (var s = 0; s < nbSub; s++) {
+    var diffraction = 0.25 / this.nbSub;
+    for (var s = 0; s < this.nbSub; s++) {
         courbe = courbe - diffraction;
         sub = Math.pow(2, nbSubTemp) - 1;
         var step = (sub + 1);
@@ -107,7 +124,7 @@ matrix.prototype.buildFloor = function () {
     }
     geometry.computeFaceNormals();
     geometry.computeVertexNormals();
-    var cube = new THREE.Mesh(geometry, mat);
+    var cube = new THREE.Mesh(geometry, this.material.floor);
     cube.material.side = THREE.DoubleSide;
     cube.doubleSided = true;
     cube.receiveShadow = true;

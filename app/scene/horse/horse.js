@@ -1,10 +1,16 @@
 MATERIAL.set(horse, {
     modelJson: {
-         horse: "scene/horse/model/horse.js",
+        horse: "scene/horse/model/horse.js",
     },
     material: {
-         horse : new THREE.MeshBasicMaterial({color: 0x000000, morphTargets: true}),
-         error : new THREE.MeshBasicMaterial({color: "white"})
+        horse: {
+            type: "MeshBasicMaterial", 
+            option :{color: 0x000000, morphTargets: true}
+        },
+        error: {
+            type: "MeshBasicMaterial",
+            option :{color: "white"}
+        }
     },
 });
 
@@ -12,8 +18,8 @@ MATERIAL.set(horse, {
 function horse(position, matrix, resolver, errors) {
 
     this.jsonModel = MATERIAL.get(horse).modelJson;
-    this.material  = MATERIAL.get(horse).material;
-    
+    this.material = MATERIAL.get(horse).material;
+
     this.matrix = matrix;
     this.resolver = resolver;
     this.errors = errors;
@@ -275,7 +281,7 @@ horse.prototype.initSens = function (position) {
 
 horse.prototype.error = function (position) {
     gemCube = new THREE.BoxGeometry(5, 5, 1000);
-   
+
     var object = new THREE.Mesh(gemCube, this.material.error);
     object.position.z = position.z;
     object.position.y = position.y;
