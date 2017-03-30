@@ -1,29 +1,26 @@
-MATERIAL.set(floor, {
-    texture:{
-        floor: 'scene/map/images/snow.jpg',
-    },
+MATERIAL.set("floor_default", {
     material: {
         floor: {
             type: "MeshPhongMaterial",
-            option :{map: "floor", shininess: 50}
+            option: {color: "0xffffff", shininess: 0}
         }
     }
 });
 
-function  floor(grid) {
-    
-    this.material = MATERIAL.get(floor).material;
+function  floor(matrix, material) {
 
-     // SEPARATE GEOMETRY AND GRID IS LONGER BUT MORE READABLE
+    this.material = material.material ? material : MATERIAL.get("floor_default").material;
+
+    // SEPARATE GEOMETRY AND GRID IS LONGER BUT MORE READABLE
     var geometry = new THREE.Geometry();
-    
-    var x = grid.matrix;
+
+    var x = matrix.matrix;
     var y = x;
-    
-   // ADD VERTICES
+
+    // ADD VERTICES
     for (var i = 0; i < x; i++) {
         for (var j = 0; j < y; j++) {
-            geometry.vertices.push(grid.grid[i][j]);
+            geometry.vertices.push(matrix.grid[i][j]);
         }
     }
     // FILLING FACES
@@ -44,7 +41,7 @@ function  floor(grid) {
             geometry.faceVertexUvs[ 0 ].push([uvs[0], uvs[2], uvs[3]]);
         }
     }
-    
+
     geometry.computeFaceNormals();
     geometry.computeVertexNormals();
     var cube = new THREE.Mesh(geometry, this.material.floor);
@@ -53,5 +50,5 @@ function  floor(grid) {
     cube.receiveShadow = true;
     cube.position.set(0, 0, 0);
     return cube;
-   
+
 }

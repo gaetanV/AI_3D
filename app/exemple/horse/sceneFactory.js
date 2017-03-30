@@ -1,5 +1,33 @@
+MATERIAL.set("floor", {
+    texture: {
+        floor: 'exemple/horse/images/snow.jpg',
+    },
+    material: {
+        floor: {
+            type: "MeshPhongMaterial",
+            option: {map: "floor", shininess: 50}
+        },
+    }
+});
+MATERIAL.set("fence", {
+    texture: {
+        fence: 'exemple/horse/images/ebene.jpg',
+    },
+    material: {
+        fake: {
+            type: "MeshBasicMaterial",
+            option: {color: "red", transparent: true, opacity: 0}
+        },
+        fence:{
+            type: "MeshPhongMaterial",
+            option: {map: "fence", color: 0xffffff, shininess: 0}
+        }
+    }
+});
+
 function sceneFactory(scene) {
     this.scene = scene;
+    this.scene.fog = new THREE.FogExp2(0xffffff, 0.0005);
     this.floor = new THREE.Object3D();
     this.decor = new THREE.Object3D();
     this.horses = new THREE.Object3D();
@@ -16,21 +44,15 @@ sceneFactory.prototype.buildSun = function (position) {
     return pSun.interface;
 }
 
-sceneFactory.prototype.buildFloor = function (m) {
-  
-  
-    this.floor.add(new floor(m));
-    
-    var result = new fence(m);
-
+sceneFactory.prototype.buildFloor = function (matrix) {
+    this.floor.add(new floor(matrix,MATERIAL.get("floor")));
+    var result = new fence(matrix,MATERIAL.get("fence"));
     result.decor.map(function (a) {
         this.decor.add(a);
     }.bind(this));
     result.scene.map(function (a) {
         this.scene.add(a);
     }.bind(this));
-   
-    return m;
 };
 
 sceneFactory.prototype.buildSphere = function () {
@@ -47,10 +69,7 @@ sceneFactory.prototype.buildSphere = function () {
     this.scene.add(sphere);
 }
 
-sceneFactory.prototype.addFrog = function () {
-    this.scene.fog = new THREE.FogExp2(0xffffff, 0.0005);
-    //scene.fog.color.setHSL(1.61, 0.2, 0.15);
+sceneFactory.prototype.buildSphere = function () {
+    
+    
 }
-
-
-

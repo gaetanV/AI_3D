@@ -1,31 +1,27 @@
-MATERIAL.set(fence, {
-    texture: {
-        fence: 'scene/map/images/ebene.jpg'
-    },
+MATERIAL.set("fence_default", {
     material: {
         fake: {
             type: "MeshBasicMaterial",
             option: {color: "red", transparent: true, opacity: 0}
         },
-        fence:{
+        fence: {
             type: "MeshPhongMaterial",
-            option: {map: "fence", color: 0xffffff, shininess: 0}
+            option: {color: "0xffffff", shininess: 0}
         }
     }
 });
+function  fence(matrix, material) {
 
-function  fence(grid) {
-    this.grid = grid;
-    this.material = MATERIAL.get(fence).material;
-    
+    this.grid = matrix;
+    this.material = material.material ? material : MATERIAL.get("fence_default").material;
+
     this.pourcentage = 20;
-    
-    var x = grid.x;
-    var y = x;
-    
-    var size= grid.sizeGrille;
 
-   
+    var x = matrix.x;
+    var y = x;
+
+    var size = grid.sizeGrid;
+
     var result = {
         decor: [],
         scene: [],
@@ -42,7 +38,7 @@ function  fence(grid) {
         object.position.x = position.x + size / 2;
         object.rotation.z = Math.PI / 2;
         result.decor.push(object);
-        var gemCubeO = new THREE.BoxGeometry(size/ 20, size, size / 40);
+        var gemCubeO = new THREE.BoxGeometry(size / 20, size, size / 40);
         for (var i = 0; i < 10; i++) {
             var object = new THREE.Mesh(gemCubeO, this.material.fence);
             var positionTemp = position.clone();
@@ -57,10 +53,10 @@ function  fence(grid) {
         }
         return result;
     }.bind(this);
-    
+
     this.map = new Array();
-    for (var i = 0; i < x; i++) {     
-       var ligne = new Array();
+    for (var i = 0; i < x; i++) {
+        var ligne = new Array();
         for (var j = 0; j < y; j++) {
             var random = Math.floor(Math.random() * (100 / this.pourcentage));
             if (random === 0) {
@@ -73,7 +69,7 @@ function  fence(grid) {
         }
         this.map.push(ligne);
     }
-  
+
     for (var i = 0; i < this.map.length; i++) {
         for (var j = 0; j < this.map[i].length; j++) {
             if (this.map[i][j] === 1) {
@@ -84,10 +80,10 @@ function  fence(grid) {
             }
         }
     }
-    
+
     return result;
-    
- 
+
+
 }
 
 

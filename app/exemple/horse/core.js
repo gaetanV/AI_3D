@@ -25,9 +25,6 @@ function core(domID) {
     window.addEventListener("resize", this.onWindowResize.bind(this));
 
 
-    // STATS
-    this.addStats();
-
 
     // RENDER
     var renderer = new THREE.WebGLRenderer({antialias: true});
@@ -40,17 +37,24 @@ function core(domID) {
 
 
     // ADD DOM
+    this.container.dom.innerHTML ="";
     this.container.dom.appendChild(this.renderer.domElement);
 
+ // STATS
+    this.addStats();
+
     // SCENE
-
-
     this.scene = new THREE.Scene();
     this.sceneFactory = new sceneFactory(this.scene);
-    this.matrix = this.sceneFactory.buildFloor(new matrix());
+    
+    this.matrix = new matrix(10,1000,{
+        maxHeight:200
+    });
+    
+    this.sceneFactory.buildFloor(this.matrix);
     this.sun = this.sceneFactory.buildSun(new THREE.Vector3(0, 0, 700));
-    this.sceneFactory.addFrog();
     this.sceneFactory.buildSphere();
+    
     this.horses = new horseCollection(this.sceneFactory.horses, this.sceneFactory.decor, this.matrix, this.sceneFactory.errors);
     this.horses.addHorse(new THREE.Vector3(0, 500, 0));
     this.horses.addHorse(new THREE.Vector3(200, -100, 0));
@@ -59,7 +63,7 @@ function core(domID) {
 }
 
 core.prototype.addStats = function () {
-    stats = new Stats();
+    var stats = new Stats();
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.top = '0px';
     this.container.dom.appendChild(stats.domElement);

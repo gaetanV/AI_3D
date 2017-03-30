@@ -1,6 +1,6 @@
 MATERIAL.set(horse, {
     modelJson: {
-        horse: "scene/horse/model/horse.js",
+        horse: "scene/object/horse/model/horse.js",
     },
     material: {
         horse: {
@@ -160,7 +160,7 @@ horse.prototype.animate = function () {
             this.model.position.y += this.moveY * this.speed.Delta;
 
             //  OFF ROAD
-            if (this.model.position.y > (this.matrix.sizeGrille * this.matrix.y / 2) || this.model.position.y < -(this.matrix.sizeGrille * this.matrix.y) / 2 || this.model.position.x > (this.matrix.sizeGrille * this.matrix.x / 2) || this.model.position.x < -(this.matrix.sizeGrille * this.matrix.x) / 2) {
+            if (this.model.position.y > (this.matrix.sizeGrid * this.matrix.y / 2) || this.model.position.y < -(this.matrix.sizeGrid * this.matrix.y) / 2 || this.model.position.x > (this.matrix.sizeGrid * this.matrix.x / 2) || this.model.position.x < -(this.matrix.sizeGrid * this.matrix.x) / 2) {
                 var position = new THREE.Vector3(0, 0, 0);
                 this.setGoal(position);
                 this.etat = 2;

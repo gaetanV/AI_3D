@@ -5,6 +5,7 @@ MATERIAL = function () {
         modelJson: {},
         texture: {},
         material: {},
+        sound: {},
     }
 
     var complete = {}
@@ -12,9 +13,8 @@ MATERIAL = function () {
         this.texture = {};
         this.modelJson = {};
         this.material = {};
+        this.sound = {};
     }
-
-
 
     return {
         set: (entity, option) => {
@@ -29,6 +29,9 @@ MATERIAL = function () {
                     case "material":
                         tasks.material[entity] = option[i];
                         break;
+                    case "sound":
+                        tasks.sound[entity] = option[i];
+                        break;
                     default:
                         throw "option not yet supported";
                 }
@@ -42,11 +45,9 @@ MATERIAL = function () {
 
         },
         boot: (resolve) => {
-            
             firstPass(resolve);
-             
             function  firstPass(resolve) {
-                var size = Object.keys(tasks.texture).length + Object.keys(tasks.modelJson).length;
+                var size = Object.keys(tasks.texture).length + Object.keys(tasks.modelJson).length + Object.keys(tasks.sound).length;
                 size === 0 && secondPass(resolve);
                 function* thread() {
                     var index = 0;
@@ -55,6 +56,12 @@ MATERIAL = function () {
                     }
                 }
                 var iterator = thread();
+                for (var a in tasks.sound) {
+                        //OPTION PRELOAD ?
+                        !complete[a] && (complete[a] = new result());
+                        complete[a].sound = tasks.sound[a];
+                }
+              
                 for (var a in tasks.texture) {
                     TOOLS.loader.texture(tasks.texture[a]).then(function (textureCallBack) {
                         !complete[this.a] && (complete[this.a] = new result());

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Bomb</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+        <script src="./imports/three.min.js"></script>
+        <script src="./imports/stats.min.js"></script>
+
+        <script src="./scene/TOOLS.js"></script>
+        <script src="./scene/MATERIAL.js"></script>
+        <script src="./scene/map/map.js"></script>
+        <script src="./scene/map/cubes.js"></script>
+        <script src="./scene/object/tente/tente.js"></script> 
+        
+        <script src="./exemple/bomb/core.js"></script>
+        <script src="./exemple/bomb/sceneFactory.js"></script>
+        
+        <link rel="stylesheet" href="./css/reset.css">
+       
+    </head>
+    <body>
+        <div id="container">LOADING...</div>
+        <script>
+            MATERIAL.boot(function () {
+                new core("container");
+            });
+        </script>
+    </body>
+</html>

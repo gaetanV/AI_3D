@@ -1,23 +1,23 @@
-function  matrix() {
+function  matrix(division, size, options) {
 
     //SET YOUR PROPERTIES
-    
-    this.sizeGrille = 100;
-    this.x = 10;
+
+    this.sizeGrid = size / division;
+    this.x = division;
     this.y = this.x;
-    this.length = this.sizeGrille * this.x;
+    this.length = this.sizeGrid * this.x;
     
     //SMOOTH
     this.nbSub = 3;
-    this.curve =  0.75;
-    
+    this.curve = 0.75;
+
     //RANDOM 
-    this.maxHeight = 200;
-    
+    this.maxHeight = options.maxHeight?options.maxHeight:0;
+
     var sub = Math.pow(2, this.nbSub) - 1;
     this.matrix = 1 + this.x * (1 + sub);
-    this.matrixSize = (this.length / (this.matrix)) + 50;
-  
+    this.matrixSize = (this.length / (this.matrix)) + this.sizeGrid / 2;
+
     // BUILD GRID 
     var grid = new Array();
     for (var i = 0; i < this.matrix; i++) {
@@ -33,13 +33,13 @@ function  matrix() {
             position.x = this.matrixSize * (j - this.matrix / 2);
             position.y = -this.matrixSize * (i - this.matrix / 2);
             grid[i][j] = position;
-            
+
         }
     }
-    
+
     var nbSubTemp = this.nbSub;
     var diffraction = 0.25 / this.nbSub;
-    
+
     // SMOOTH SUB
     for (var s = 0; s < this.nbSub; s++) {
         var courbe = this.curve - diffraction;
@@ -73,7 +73,7 @@ function  matrix() {
             }
         }
     }
-    
+
     this.grid = grid;
 }
 

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Horse</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        
+        <script src="./imports/three.min.js"></script>
+        <script src="./imports/stats.min.js"></script>
+        
+        <script src="./scene/TOOLS.js"></script>
+        <script src="./scene/MATERIAL.js"></script>
+        <script src="./scene/matrix/matrix.js"></script>
+        <script src="./scene/matrix/fence.js"></script>
+        <script src="./scene/matrix/floor.js"></script>
+        <script src="./scene/object/sun/sun.js"></script>
+        <script src="./scene/object/horse/horseResolve.js"></script>
+        <script src="./scene/object/horse/horseCollection.js"></script>
+        <script src="./scene/object/horse/horse.js"></script>
+        
+        <script src="./exemple/horse/core.js"></script>
+        <script src="./exemple/horse/sceneFactory.js"></script>
+        
+        <link rel="stylesheet" href="./css/reset.css">
+    </head>
+    <body>
+        <div id="container">LOADING...</div>
+        <script>
+            MATERIAL.boot(function () {
+                new core("container");
+            });
+        </script>
+    </body>
+</html>
