@@ -17,15 +17,19 @@ sceneFactory.prototype.buildSun = function (position) {
 }
 
 sceneFactory.prototype.buildFloor = function (m) {
-    var sol = m.buildFloor();
-    this.floor.add(m.buildFloor(sol));
-    var result = m.buildMap();
+  
+  
+    this.floor.add(new floor(m));
+    
+    var result = new fence(m);
+
     result.decor.map(function (a) {
         this.decor.add(a);
     }.bind(this));
     result.scene.map(function (a) {
         this.scene.add(a);
     }.bind(this));
+   
     return m;
 };
 

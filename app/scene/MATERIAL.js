@@ -14,6 +14,8 @@ MATERIAL = function () {
         this.material = {};
     }
 
+
+
     return {
         set: (entity, option) => {
             for (var i in option) {
@@ -41,10 +43,40 @@ MATERIAL = function () {
         },
         boot: (resolve) => {
             
-            firstPass();
-            
-            function secondPass() {
+            firstPass(resolve);
+             
+            function  firstPass(resolve) {
+                var size = Object.keys(tasks.texture).length + Object.keys(tasks.modelJson).length;
+                size === 0 && secondPass(resolve);
+                function* thread() {
+                    var index = 0;
+                    while (index < size - 1) {
+                        yield index++;
+                    }
+                }
+                var iterator = thread();
+                for (var a in tasks.texture) {
+                    TOOLS.loader.texture(tasks.texture[a]).then(function (textureCallBack) {
+                        !complete[this.a] && (complete[this.a] = new result());
+                        complete[this.a].texture = textureCallBack;
+                        if (iterator.next().done === true) {
+                            secondPass(resolve);
+                        }
+                    }.bind({a: a}));
+                }
+                for (var a in tasks.modelJson) {
+                    TOOLS.loader.json(tasks.modelJson[a]).then(function (geometryCallBack) {
+                        !complete[this.a] && (complete[this.a] = new result());
+                        complete[this.a].modelJson = geometryCallBack;
+                        if (iterator.next().done === true) {
+                            secondPass(resolve);
+                        }
+                    }.bind({a: a}));
+                }
+            }
+            function  secondPass(resolve) {
                 var size = Object.keys(tasks.material).length;
+                size === 0 && resolve();
                 function* thread() {
                     var index = 0;
                     while (index < size - 1) {
@@ -59,7 +91,12 @@ MATERIAL = function () {
                     for (var i in b) {
                         var c = b[i];
                         if (c.option.map) {
-                            c.option.map = complete[a].texture[c.option.map];
+                            var texture = complete[a].texture[c.option.map];
+                            if(! texture){
+                                  console.log(complete[a]);
+                                 throw "wrong mapping material '"+c.option.map+"' not found";
+                            }
+                            c.option.map = texture;
                         }
                         complete[a].material[i] = new THREE[c.type](c.option);
                     }
@@ -68,37 +105,8 @@ MATERIAL = function () {
                         resolve();
                     }
                 }
-
             }
-            function firstPass() {
-                var size = Object.keys(tasks.texture).length + Object.keys(tasks.modelJson).length;
-                size === 0 && resolve();
-                function* thread() {
-                    var index = 0;
-                    while (index < size - 1) {
-                        yield index++;
-                    }
-                }
-                var iterator = thread();
-                for (var a in tasks.texture) {
-                    TOOLS.loader.texture(tasks.texture[a]).then(function (textureCallBack) {
-                        !complete[this.a] && (complete[this.a] = new result());
-                        complete[this.a].texture = textureCallBack;
-                        if (iterator.next().done === true) {
-                            secondPass();
-                        }
-                    }.bind({a: a}));
-                }
-                for (var a in tasks.modelJson) {
-                    TOOLS.loader.json(tasks.modelJson[a]).then(function (geometryCallBack) {
-                        !complete[this.a] && (complete[this.a] = new result());
-                        complete[this.a].modelJson = geometryCallBack;
-                        if (iterator.next().done === true) {
-                            secondPass();
-                        }
-                    }.bind({a: a}));
-                }
-            }
+           
         }
     };
 
