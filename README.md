@@ -6,6 +6,14 @@ Three.js Framework
 Based on my personal trys (2014)
 
 ---------------------------------------------
+GRID IMAGES
+---------------------------------------------
+apt-get install imagemagick
+GRID.sh
+@arg1: <string> path of the file 
+@arg2: <int> number of blocks 
+
+---------------------------------------------
 Crédit
 ---------------------------------------------
 

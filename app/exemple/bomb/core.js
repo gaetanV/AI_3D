@@ -4,8 +4,8 @@ function core(domID) {
     var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
     camera.rotation.x = 0.65;
     camera.position.z = 800;
-    camera.position.y = -300;
-    camera.position.x = 800;
+    camera.position.y = -1000;
+    camera.position.x = 0;
     this.camera = camera;
 
     // CONTAINER

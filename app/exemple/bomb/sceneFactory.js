@@ -1,20 +1,24 @@
-MATERIAL.set("map", {
+MATERIAL.set("floor", {
     texture: {
-        floor: 'exemple/bomb/images/map.jpg',
+        top: 'exemple/bomb/images/grass.jpg',
     },
     material: {
-        floor: {
+        border:{
             type: "MeshPhongMaterial",
-            option: {map: "floor", color: 0xffffff}
+            option: {color: 0xff00ff }
+        },
+        top:{
+            type: "MeshPhongMaterial",
+            option: {map: "top", color: 0xffffff, shininess: 0}
         }
     }
 });
 function sceneFactory(scene) {
     this.scene = scene;
-
 }
 sceneFactory.prototype.map = function () {
-    var tmpMap = new map(
+    
+    var rules =  
             [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -36,28 +40,58 @@ sceneFactory.prototype.map = function () {
                 [0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 3, 0, 0, 0, 0, 1, 0, 0, 0, 0],
                 [0, 0, 0, 0, 1, 0, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            ] ;
+    
+    var tmpMap = new map(
+            [
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 3, 4, 5, 5, 5, 5, 3, 4, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 1, 2, 4, 4, 5, 5, 5, 5, 4, 4, 3, 2, 1, 0, 0, 0],
+                [0, 0, 0, 0, 1, 2, 4, 4, 5, 5, 5, 5, 4, 4, 3, 2, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 3, 4, 5, 5, 5, 5, 3, 4, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 4, 3, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ]
-            , 100
+            , 100 
             );
 
-   var c = new cubes(tmpMap, MATERIAL.get("map"));
-   for(var i in c){
-       this.scene.add(c[i]);
-   }
+    var c = new cubes(tmpMap, MATERIAL.get("floor"),{
+        gap:5,
+        height:10,
+    });
+    
+    for (var i in c) {
+        this.scene.add(c[i]);
+    }
+
+
 }
 
 sceneFactory.prototype.lights = function () {
-      /*LIGHT*/
-             
-                var light = new THREE.SpotLight(0xffffff, 3);
-                light.position.set(0, 0, 1510);
-      
-                this.scene.add(light);
+    /*LIGHT*/
 
-                var light = new THREE.SpotLight(0xffffff, 0.5);
-                light.position.set(0, 0, 1800);
-                 this.scene.add(light);
+    var light = new THREE.SpotLight(0xffffff, 3);
+    light.position.set(0, 0, 1510);
 
-                this.scene.add(light);
-                
+    this.scene.add(light);
+
+    var light = new THREE.SpotLight(0xffffff, 0.5);
+    light.position.set(0, 0, 1800);
+    this.scene.add(light);
+
+    this.scene.add(light);
+
 }

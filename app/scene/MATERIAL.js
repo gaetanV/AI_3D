@@ -63,6 +63,7 @@ MATERIAL = function () {
                 }
               
                 for (var a in tasks.texture) {
+
                     TOOLS.loader.texture(tasks.texture[a]).then(function (textureCallBack) {
                         !complete[this.a] && (complete[this.a] = new result());
                         complete[this.a].texture = textureCallBack;
@@ -100,11 +101,12 @@ MATERIAL = function () {
                         if (c.option.map) {
                             var texture = complete[a].texture[c.option.map];
                             if(! texture){
-                                  console.log(complete[a]);
+ 
                                  throw "wrong mapping material '"+c.option.map+"' not found";
                             }
                             c.option.map = texture;
                         }
+                        // TO DO MAP REPERTORY
                         complete[a].material[i] = new THREE[c.type](c.option);
                     }
                     if (iterator.next().done === true) {
