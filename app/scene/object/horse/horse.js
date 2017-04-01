@@ -200,7 +200,7 @@ horse.prototype.collisionFixe = function () {
         var distance = Math.sqrt(Math.pow((this.model.position.x - position.x), 2) + Math.pow((this.model.position.y - position.y), 2));
         distance = Math.ceil(distance);
 
-        var intersect = this.resolver.decorCollision(this.getCollisonPoints(position), distance);
+        var intersect = this.resolver.collision(this.getCollisonPoints(position), distance);
 
         /**
          * IF GOAL COLLISION
@@ -217,7 +217,7 @@ horse.prototype.collisionFixe = function () {
                 angle += step;
                 var position = this.anglePosition(angle, intersect.point);
 
-            } while (this.resolver.decorCollision(this.getCollisonPoints(position), distance) && angle < Math.PI * 2);
+            } while (this.resolver.collision(this.getCollisonPoints(position), distance) && angle < Math.PI * 2);
 
             this.pushGoal(position);
 
@@ -271,7 +271,7 @@ horse.prototype.initSens = function (position) {
     this.moveX = orientation.x;
     this.moveY = orientation.y;
     if (this.selfCollision) {
-        var intersect = this.resolver.horseCollisionPredict(this);
+        var intersect = this.resolver.collisionPredict(this);
         if (intersect) {
             this.error(intersect);
         }

@@ -10,17 +10,18 @@ MATERIAL.set("fence_default", {
         }
     }
 });
-function  fence(matrix, material) {
+function  fence(matrix, material ) {
 
+  
     this.grid = matrix;
-    this.material = material.material ? material : MATERIAL.get("fence_default").material;
-
+    this.material = material.material ? material.material : MATERIAL.get("fence_default").material;
+  
     this.pourcentage = 20;
 
     var x = matrix.x;
     var y = x;
 
-    var size = grid.sizeGrid;
+    var size = matrix.sizeGrid;
 
     var result = {
         decor: [],

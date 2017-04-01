@@ -40,25 +40,22 @@ function core(domID) {
     this.container.dom.innerHTML ="";
     this.container.dom.appendChild(this.renderer.domElement);
 
- // STATS
+    // STATS
     this.addStats();
 
     // SCENE
     this.scene = new THREE.Scene();
     this.sceneFactory = new sceneFactory(this.scene);
-    
+    this.sceneFactory.buildSphere();
+    this.sun = this.sceneFactory.buildSun(new THREE.Vector3(0, 0, 700));
+   
     this.matrix = new matrix(10,1000,{
         maxHeight:200
     });
-    
+
     this.sceneFactory.buildFloor(this.matrix);
-    this.sun = this.sceneFactory.buildSun(new THREE.Vector3(0, 0, 700));
-    this.sceneFactory.buildSphere();
+    this.horses = this.sceneFactory.buildHorses(this.matrix);
     
-    this.horses = new horseCollection(this.sceneFactory.horses, this.sceneFactory.decor, this.matrix, this.sceneFactory.errors);
-    this.horses.addHorse(new THREE.Vector3(0, 500, 0));
-    this.horses.addHorse(new THREE.Vector3(200, -100, 0));
-    this.horses.addHorse(new THREE.Vector3(500, -100, 0));
     this.render();
 }
 
@@ -76,7 +73,7 @@ core.prototype.click = function (e) {
     this.mouseVector.y = 1 - 2 * (e.clientY / this.container.height);
     var raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(this.mouseVector.clone(), this.camera);
-    intersects = raycaster.intersectObjects(this.horses.horses.children, true);
+    intersects = raycaster.intersectObjects(this.sceneFactory.horses.children, true);
 
     // IF MOUSE INTERSECT A HOURSE
     if (intersects[0]) {

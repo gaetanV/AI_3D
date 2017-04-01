@@ -1,9 +1,9 @@
-function horseResolver(horses, decor) {
+function matrixResolver(horses, decor) {
     this.horses = horses;
     this.decor = decor;
 }
 
-horseResolver.prototype.decorCollision = function (collisionObject, distance) {
+matrixResolver.prototype.collision = function (collisionObject, distance) {
     /**
     * IF CROSS
     */
@@ -19,7 +19,7 @@ horseResolver.prototype.decorCollision = function (collisionObject, distance) {
 }
 
 
-horseResolver.prototype.horseCollisionPredict = function (horse) {
+matrixResolver.prototype.collisionPredict = function (horse) {
 
     for (var j = 0; j < this.horses.children.length; j++) {
         var horseBis = this.horses.children[j].obj;

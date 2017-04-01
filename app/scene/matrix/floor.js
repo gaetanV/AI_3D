@@ -8,8 +8,8 @@ MATERIAL.set("floor_default", {
 });
 
 function  floor(matrix, material) {
-
-    this.material = material.material ? material : MATERIAL.get("floor_default").material;
+   
+    this.material = material.material ? material.material : MATERIAL.get("floor_default").material;
 
     // SEPARATE GEOMETRY AND GRID IS LONGER BUT MORE READABLE
     var geometry = new THREE.Geometry();

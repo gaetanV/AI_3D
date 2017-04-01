@@ -40,6 +40,7 @@ function sceneFactory(scene) {
 
 sceneFactory.prototype.buildSun = function (position) {
     var pSun = new sun(position);
+ 
     this.scene.add(pSun.model);
     return pSun.interface;
 }
@@ -69,7 +70,12 @@ sceneFactory.prototype.buildSphere = function () {
     this.scene.add(sphere);
 }
 
-sceneFactory.prototype.buildSphere = function () {
-    
+sceneFactory.prototype.buildHorses = function (matrix) {
+    var horses = new collection(this.horses,horse, new matrixResolver(this.horses,this.decor), matrix, this.errors);
+    horses.add(new THREE.Vector3(0, 500, 0));
+    horses.add(new THREE.Vector3(200, -100, 0));
+    horses.add(new THREE.Vector3(500, -100, 0));
+    return  horses;
     
 }
+
