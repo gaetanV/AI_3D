@@ -17,6 +17,7 @@ MATERIAL.set("fence", {
         fake: {
             type: "MeshBasicMaterial",
             option: {color: "red", transparent: true, opacity: 0}
+          //  option: {color: "red"}
         },
         fence:{
             type: "MeshPhongMaterial",
@@ -36,7 +37,7 @@ function sceneFactory(scene) {
     this.scene.add(this.decor);
     this.scene.add(this.horses);
     this.scene.add(this.errors);
-    this.errorsFactory = new ERROR(0xffffff,this.errors);
+    this.errorsFactory = new BUILD.error(0xffffff,this.errors);
  
 }
 
@@ -48,7 +49,11 @@ sceneFactory.prototype.buildSun = function (position) {
 }
 
 sceneFactory.prototype.buildFloor = function (matrix) {
-    this.floor.add(new floor(matrix,MATERIAL.get("floor")));
+     this.floor.add(
+            matrix.build(MATERIAL.get("floor"))
+      );
+    
+    
     var result = new fence(matrix,MATERIAL.get("fence"));
     result.decor.map(function (a) {
         this.decor.add(a);
@@ -73,8 +78,8 @@ sceneFactory.prototype.buildSphere = function () {
 }
 
 sceneFactory.prototype.buildHorses = function (matrix) {
-    var horses = new COLLECTION(this.horses,horse, new matrixResolver(this.horses,this.decor,this.errorsFactory), matrix,this.errorsFactory );
-    horses.add(new THREE.Vector3(0, 500, 0));
+    var horses = new BUILD.object.collection(this.horses,horse, new BUILD.matrix.resolve(this.horses,this.decor,this.errorsFactory), matrix,this.errorsFactory );
+    horses.add(new THREE.Vector3(5, 500.4, 0));
     horses.add(new THREE.Vector3(200, -100, 0));
     horses.add(new THREE.Vector3(500, -100, 0));
     return  horses;

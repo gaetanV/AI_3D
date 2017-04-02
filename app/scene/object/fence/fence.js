@@ -3,6 +3,7 @@ MATERIAL.set("fence_default", {
         fake: {
             type: "MeshBasicMaterial",
             option: {color: "red", transparent: true, opacity: 0}
+           
         },
         fence: {
             type: "MeshPhongMaterial",

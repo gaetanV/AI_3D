@@ -2,9 +2,8 @@ function core(domID) {
 
     this.selection;
     this.mouseVector = new THREE.Vector3();
-
-
-
+  
+    
     // CAMERA
     var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 10000);
     camera.position.y = 0;
@@ -24,8 +23,8 @@ function core(domID) {
     this.container.dom.addEventListener("click", this.click.bind(this));
     window.addEventListener("resize", this.onWindowResize.bind(this));
 
-
-
+    
+    
     // RENDER
     var renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setClearColor(0x000000, 1);
@@ -49,13 +48,14 @@ function core(domID) {
     this.sceneFactory.buildSphere();
     this.sun = this.sceneFactory.buildSun(new THREE.Vector3(0, 0, 700));
    
-    this.matrix = new matrix(10,1000,{
+    this.matrix = new BUILD.matrix(10,1000,{
         maxHeight:200
     });
+    
+    
 
     this.sceneFactory.buildFloor(this.matrix);
     this.horses = this.sceneFactory.buildHorses(this.matrix);
-    
     this.render();
 }
 
@@ -104,11 +104,12 @@ core.prototype.onWindowResize = function () {
 
 // ON KEYFRAME
 core.prototype.render = function () {
-    this.sun.animate();
-    this.horses.animate();
+   
     window.requestAnimationFrame(function () {
         this.render();
     }.bind(this));
+    this.sun.animate();
+    this.horses.animate();
     this.stats && (this.stats.update());
     this.renderer.render(this.scene, this.camera);
 }

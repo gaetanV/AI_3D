@@ -42,7 +42,7 @@ sceneFactory.prototype.map = function () {
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ] ;
     
-    var tmpMap = new map(
+    var tmpMap = new BUILD.grid (
             [
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -68,7 +68,7 @@ sceneFactory.prototype.map = function () {
             , 100 
             );
 
-    var c = new cubes(tmpMap, MATERIAL.get("floor"),{
+    var c = tmpMap.build(MATERIAL.get("floor"),{
         gap:5,
         height:10,
     });
