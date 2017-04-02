@@ -36,6 +36,8 @@ function sceneFactory(scene) {
     this.scene.add(this.decor);
     this.scene.add(this.horses);
     this.scene.add(this.errors);
+    this.errorsFactory = new ERROR(0xffffff,this.errors);
+ 
 }
 
 sceneFactory.prototype.buildSun = function (position) {
@@ -71,7 +73,7 @@ sceneFactory.prototype.buildSphere = function () {
 }
 
 sceneFactory.prototype.buildHorses = function (matrix) {
-    var horses = new collection(this.horses,horse, new matrixResolver(this.horses,this.decor), matrix, this.errors);
+    var horses = new COLLECTION(this.horses,horse, new matrixResolver(this.horses,this.decor,this.errorsFactory), matrix,this.errorsFactory );
     horses.add(new THREE.Vector3(0, 500, 0));
     horses.add(new THREE.Vector3(200, -100, 0));
     horses.add(new THREE.Vector3(500, -100, 0));

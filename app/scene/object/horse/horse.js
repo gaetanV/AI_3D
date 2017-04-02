@@ -4,26 +4,25 @@ MATERIAL.set(horse, {
     },
     material: {
         horse: {
-            type: "MeshBasicMaterial", 
-            option :{color: 0x000000, morphTargets: true}
-        },
-        error: {
             type: "MeshBasicMaterial",
-            option :{color: "white"}
-        }
+            option: {color: 0x000000, morphTargets: true}
+        },
     },
 });
 
-function horse(position, matrix, resolver, errors) {
+function horse(position, matrix, resolver, errorsFactory) {
 
     this.jsonModel = MATERIAL.get(horse).modelJson;
     this.material = MATERIAL.get(horse).material;
 
     this.matrix = matrix;
     this.resolver = resolver;
-    this.errors = errors;
+    this.errors = errorsFactory;
 
     this.selfCollision = true;
+    this.ZMove = true;
+
+    this.etat = 1;
 
     //SPEED
     this.speed = {
@@ -32,22 +31,11 @@ function horse(position, matrix, resolver, errors) {
         Moy: 3,
         Min: 2,
         Friction: 100,
-    }
-
-    this.etat = 0;
-    this.goal = new Array();
-    this.currentGoal = new THREE.Vector3(0, 0, 0);
-    this.newAngleMove;
-    this.moveX;
-    this.moveY;
-    this.ZMove = true;
-
-    this.animOffset = 0; // starting frame of animation
-    this.duration = 1000; // milliseconds to complete animation
-    this.keyframes = 14; // total number of animation frames
-    this.interpolation = this.duration / this.keyframes; // milliseconds per frame
-    this.lastKeyframe = 0; // previous keyframe
-    this.currentKeyframe = 0;
+    };
+    this.move = {
+        x: 0,
+        y: 0,
+    };
 
     // LOAD THE MODEL
     var animatedMesh;
@@ -61,174 +49,82 @@ function horse(position, matrix, resolver, errors) {
     group.model = animatedMesh;
     group.obj = this;
     group.position.set(position.x, position.y, position.z);
-    this.mesh = animatedMesh;
+
     this.model = group;
-    this.setGoal(new THREE.Vector3(0, 0, 0));
 
+    this.object = new OBJECTMATRIX(this.matrix, this.model, this.speed,this.move);
+    this.animated = new ANIMATE(animatedMesh, 0, 1000, 14);
+    this.goal = new GOAL(new THREE.Vector3(0, 0, 0));
+     this.object.setPath(this.collisionFixe(this.goal.current));
 }
-
 
 horse.prototype.setGoal = function (position) {
-    this.goal = new Array();
-    this.goal[0] = position;
-    this.currentGoal = position;
-    this.etat = 1;
-    this.collisionFixe();
-}
-
-horse.prototype.popGoal = function () {
-    // +1 GOAL
-    if (this.goal.length > 1) {
-        this.goal.pop();
-        this.currentGoal = this.goal[this.goal.length - 1];
-
-        this.collisionFixe();
-        // 0 GOAL
-    } else {
-        var position = new THREE.Vector3((this.model.position.x + this.moveX * 1000 / this.speed.Delta), (this.model.position.y + this.moveY * 1000 / this.speed.Delta), 0);
-        this.setGoal(position);
-        this.etat = 2;
+    //FOLLOW THE DIRECTION
+    if (!position) {
+        position = new THREE.Vector3((this.model.position.x + this.move.x * this.matrix.sizeGrid * this.matrix.x / 2 / this.speed.Delta), (this.model.position.y + this.move.y * this.matrix.sizeGrid * this.matrix.y / this.speed.Delta), 0);
     }
+    this.goal.set(position);
+    this.etat = 2;
+    this.object.setPath(this.collisionFixe(this.goal.current));
 }
-horse.prototype.pushGoal = function (position) {
-    this.goal.push(position);
-    this.currentGoal = position;
-}
-
-
-horse.prototype.moveZ = function () {
-    var oldPosition = this.model.position.clone();
-    var newPosition = this.matrix.returnZ(this.model.position);
-    var ZDiff = oldPosition.z - newPosition.z;
-    var angleRad = Math.atan(ZDiff / 3);
-    this.model.model.rotation.y = Math.PI / 2 + angleRad;
-    if (this.speed.physical) {
-        if (angleRad > 0) {
-            if (this.speed.Delta < this.speed.Max) {
-                this.speed.Delta += Math.exp(angleRad) / this.speed.Friction;
-            }
-        }
-        if (angleRad === 0) {
-            if (this.speed.Delta < this.speed.Moy) {
-                this.speed.Delta += 0.5;
-            }
-            if (this.speed.Delta < this.speed.Moy) {
-                this.speed.Delta -= 0.5;
-            }
-        }
-        if (angleRad < 0) {
-            if (this.speed.Delta > this.speed.Min) {
-                this.speed.Delta -= Math.exp(-angleRad) / this.speed.Friction;
-            }
-        }
-    }
-}
-
-
-
-horse.prototype.anglePosition = function (angle, positionObj) {
-
-    var xGoalTemp = positionObj.x - this.model.position.x;
-    var yGoalTemp = positionObj.y - this.model.position.y;
-
-    // POSITION
-    var x = xGoalTemp * Math.cos(angle) - yGoalTemp * Math.sin(angle);
-    var y = xGoalTemp * Math.sin(angle) + yGoalTemp * Math.cos(angle);
-
-    // AXE MODEL
-    var position = new THREE.Vector3(x + this.model.position.x, y + this.model.position.y, 0);
-
-    return position;
-}
-
-
 
 horse.prototype.animate = function () {
-
     switch ((this.etat)) {
-
-        case 0:
-            // NO MOVE
-            break;
+        // 0 NO MOVE
         case 1:
-            // OBJECTIF
         case 2:
-            // PAS D'OBJECTIF 
-            this.ZMove && (this.moveZ());
-
-            this.model.position.x += this.moveX * this.speed.Delta;
-            this.model.position.y += this.moveY * this.speed.Delta;
-
+            // OBJECTIF || PAS D'OBJECTIF 
+            this.ZMove && (this.object.moveZ());
+            this.model.position.x += this.move.x * this.speed.Delta;
+            this.model.position.y += this.move.y * this.speed.Delta;
             //  OFF ROAD
             if (this.model.position.y > (this.matrix.sizeGrid * this.matrix.y / 2) || this.model.position.y < -(this.matrix.sizeGrid * this.matrix.y) / 2 || this.model.position.x > (this.matrix.sizeGrid * this.matrix.x / 2) || this.model.position.x < -(this.matrix.sizeGrid * this.matrix.x) / 2) {
-                var position = new THREE.Vector3(0, 0, 0);
-                this.setGoal(position);
-                this.etat = 2;
+                this.setGoal(new THREE.Vector3(0, 0, 0));
             }
-
             // YOU HAVE REACHED YOUR OBJECTIVE
-            if (Math.abs(Math.floor(this.model.position.x) - this.currentGoal.x + Math.floor(this.model.position.y) - this.currentGoal.y) <= this.speed.Delta) {
-                this.popGoal();
+            if (Math.abs(Math.floor(this.model.position.x) - this.goal.current.x + Math.floor(this.model.position.y) - this.goal.current.y) <= this.speed.Delta) {
+                // IF NOT MORE GOAL 
+                if (!this.goal.pop()) {
+                    this.setGoal();
+                }
             }
-
-            // ANIMATE THE MODEL
-            var time = new Date().getTime() % this.duration;
-            this.keyframe = Math.floor(time / this.interpolation) + this.animOffset;
-            if (this.keyframe != this.currentKeyframe)
-            {
-                this.mesh.morphTargetInfluences[ this.lastKeyframe ] = 0;
-                this.mesh.morphTargetInfluences[ this.currentKeyframe ] = 1;
-                this.mesh.morphTargetInfluences[ this.keyframe ] = 0;
-                this.lastKeyframe = this.currentKeyframe;
-                this.currentKeyframe = this.keyframe;
-            }
-            this.mesh.morphTargetInfluences[ this.keyframe ] = (time % this.interpolation) / this.interpolation;
-            this.mesh.morphTargetInfluences[ this.lastKeyframe ] = 1 - this.mesh.morphTargetInfluences[ this.keyframe ];
-
+            this.animated.next();
             break;
     }
 }
 
-
-
-horse.prototype.collisionFixe = function () {
+horse.prototype.collisionFixe = function (position) {
     var angle = 0;
-    if (this.model) {
-        var position = this.currentGoal;
-
-
-        var distance = Math.sqrt(Math.pow((this.model.position.x - position.x), 2) + Math.pow((this.model.position.y - position.y), 2));
-        distance = Math.ceil(distance);
-
-        var intersect = this.resolver.collision(this.getCollisonPoints(position), distance);
-
-        /**
-         * IF GOAL COLLISION
-         */
-        if (intersect) {
-
-            var distance = intersect.distance;
-            var step = (Math.PI * 2) / ((intersect.distance / 20) + 4);
-            distance = Math.ceil(distance) + 25;
-            /**
-             * TURN
-             */
-            do {
-                angle += step;
-                var position = this.anglePosition(angle, intersect.point);
-
-            } while (this.resolver.collision(this.getCollisonPoints(position), distance) && angle < Math.PI * 2);
-
-            this.pushGoal(position);
-
-            if (angle >= Math.PI * 2) {
-                alert("bug");
-            }
+    var distance = Math.ceil(Math.sqrt(Math.pow((this.model.position.x - position.x), 2) + Math.pow((this.model.position.y - position.y), 2)));
+    var intersect = this.resolver.collision(this.getCollisonPoints(position), distance);
+    // POSITION COLLISION
+    if (intersect) {
+      
+        var distance = intersect.distance;
+        var step = (Math.PI * 2) / ((intersect.distance / 20) + 4);
+        distance = Math.ceil(distance) + 25;
+        // ROTATE
+        var flag = true;
+        do {
+            angle += step;
+            var position = this.object.anglePosition(angle, intersect.point);
+            flag = this.resolver.collision(this.getCollisonPoints(position), distance) && angle < Math.PI * 2;
+        } while (flag);
+        this.goal.push(position);
+        if (angle >= Math.PI * 2) {
+              // TODO: OBJECT IS IN ERROR
+              this.errors.display(this.model.position,"green");
         }
-
-
-        this.initSens(position);
     }
+    
+    if (this.selfCollision) {
+        var intersect = this.resolver.collisionPredict(this);
+        if (intersect) {
+            // TODO
+        }
+    }
+    
+    return position;
 }
 
 horse.prototype.getCollisonPoints = function (position) {
@@ -236,26 +132,25 @@ horse.prototype.getCollisonPoints = function (position) {
     var collisionPoints = [];
     var orientation = position.clone().sub(this.model.position).normalize();
 
-    var angle = Math.atan2(orientation.y, orientation.x) + Math.PI / 2;
+    var angle = Math.atan2(orientation.y, orientation.x) + Math.PI / 2 + Math.PI;
 
-    var varriationXD = 6 * Math.cos(angle + Math.PI);
-    var varriationYD = 6 * Math.sin(angle + Math.PI);
-    var varriationXF = 0;
-    var varriationYF = 0;
+    var varriationXD = 6 * Math.cos(angle);
+    var varriationYD = 6 * Math.sin(angle);
 
     // FRONT LEFT
     collisionPoints[0] = new THREE.Vector3(0, 0, 1);
-    collisionPoints[0].x = this.model.position.x - varriationXD + varriationXF;
-    collisionPoints[0].y = this.model.position.y - varriationYD + varriationYF;
-    // FRONT RIGHT
-    collisionPoints[1] = new THREE.Vector3(0, 0, 1);
-    collisionPoints[1].x = this.model.position.x + varriationXD + varriationXF;
-    collisionPoints[1].y = this.model.position.y + varriationYD + varriationYF;
+    collisionPoints[0].x = this.model.position.x - varriationXD;
+    collisionPoints[0].y = this.model.position.y - varriationYD;
 
     // FRONT
     collisionPoints[2] = new THREE.Vector3(0, 0, 1);
-    collisionPoints[2].x = this.model.position.x + varriationXF + varriationXF;
-    collisionPoints[2].y = this.model.position.y + varriationYF + varriationYF;
+    collisionPoints[2].x = this.model.position.x;
+    collisionPoints[2].y = this.model.position.y;
+
+    // FRONT RIGHT
+    collisionPoints[1] = new THREE.Vector3(0, 0, 1);
+    collisionPoints[1].x = this.model.position.x + varriationXD;
+    collisionPoints[1].y = this.model.position.y + varriationYD;
 
     return {
         orientation: orientation,
@@ -263,28 +158,3 @@ horse.prototype.getCollisonPoints = function (position) {
     };
 }
 
-
-horse.prototype.initSens = function (position) {
-    var orientation = position.clone().sub(this.model.position).normalize();
-    var theta = Math.atan2(orientation.y, orientation.x);
-    this.model.rotation.z = theta;
-    this.moveX = orientation.x;
-    this.moveY = orientation.y;
-    if (this.selfCollision) {
-        var intersect = this.resolver.collisionPredict(this);
-        if (intersect) {
-            this.error(intersect);
-        }
-    }
-}
-
-horse.prototype.error = function (position) {
-    gemCube = new THREE.BoxGeometry(5, 5, 1000);
-
-    var object = new THREE.Mesh(gemCube, this.material.error);
-    object.position.z = position.z;
-    object.position.y = position.y;
-    object.position.x = position.x;
-    this.errors.add(object);
-    return object;
-};
