@@ -19,10 +19,10 @@ function  fence(matrix, material ) {
   
     this.pourcentage = 20;
 
-    var x = matrix.x;
+    var x = matrix.grid.x;
     var y = x;
 
-    var size = matrix.sizeGrid;
+    var size = matrix.grid.size.bloc.x;
 
     var result = {
         decor: [],

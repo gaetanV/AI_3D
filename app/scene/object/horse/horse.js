@@ -63,7 +63,7 @@ function horse(position, matrix, resolver, errorsFactory) {
 horse.prototype.setGoal = function (position) {
     //FOLLOW THE DIRECTION
     if (!position) {
-        position = new THREE.Vector3((this.model.position.x + this.move.x * this.matrix.sizeGrid * this.matrix.x / 2 / this.object.speed.Delta), (this.model.position.y + this.move.y * this.matrix.sizeGrid * this.matrix.y / this.object.speed.Delta), 0);
+        position = new THREE.Vector3((this.model.position.x + this.move.x * this.matrix.grid.size.bloc.x * this.matrix.grid.x / 2 / this.object.speed.Delta), (this.model.position.y + this.move.y * this.matrix.grid.size.bloc.y * this.matrix.grid.y  / this.object.speed.Delta), 0);
     }
     this.goal.set(position);
     this.etat = 2;
@@ -89,7 +89,7 @@ horse.prototype.animate = function () {
             this.model.position.x += this.move.x * this.object.speed.Delta;
             this.model.position.y += this.move.y * this.object.speed.Delta;
             //  OFF ROAD
-            if (this.model.position.y > (this.matrix.sizeGrid * this.matrix.y / 2) || this.model.position.y < -(this.matrix.sizeGrid * this.matrix.y) / 2 || this.model.position.x > (this.matrix.sizeGrid * this.matrix.x / 2) || this.model.position.x < -(this.matrix.sizeGrid * this.matrix.x) / 2) {
+            if (this.model.position.y > (this.matrix.grid.size.bloc.y * this.matrix.grid.y / 2) || this.model.position.y < -(this.matrix.grid.size.bloc.y * this.matrix.grid.y) / 2 || this.model.position.x > (this.matrix.grid.size.bloc.x * this.matrix.grid.x / 2) || this.model.position.x < -(this.matrix.grid.size.bloc.x * this.matrix.grid.x) / 2) {
                 this.setGoal(this.collisionFixe(new THREE.Vector3(0, 0, 0)));
             }
             // YOU HAVE REACHED YOUR OBJECTIVE

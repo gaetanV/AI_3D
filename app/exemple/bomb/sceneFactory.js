@@ -65,7 +65,7 @@ sceneFactory.prototype.map = function () {
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             ]
-            , 100 
+            , 100 , 100
             );
 
     var c = tmpMap.build(MATERIAL.get("floor"),{

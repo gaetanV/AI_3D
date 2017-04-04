@@ -13,7 +13,6 @@ BUILD.grid.build = function (MATERIAL) {
         }
     });
 
-
     return function (materialProperty, grid, options) {
 
         this.material = materialProperty.material ? materialProperty.material : MATERIAL.get("grid_default").material;
@@ -27,11 +26,11 @@ BUILD.grid.build = function (MATERIAL) {
 
         for (var x in grid.grid) {
             for (var y in grid.grid[x]) {
-                if (grid.grid[x][y] != 0) {
+                if (grid.grid[x][y] !== 0) {
                     var cubeSidesMaterial = new THREE.MultiMaterial([this.material.border, this.material.border, this.material.border, this.material.border, this.material.top, this.material.border]);
-                    var geom = new THREE.CubeGeometry(grid.sizeGrid, grid.sizeGrid, 20 + this.height * grid.grid[x][y] - 1);
+                    var geom = new THREE.CubeGeometry(grid.size.bloc.x, grid.size.bloc.x, 20 + this.height * grid.grid[x][y] - 1);
                     var cube = new THREE.Mesh(geom, cubeSidesMaterial);
-                    cube.position.set(dx + (x * (grid.sizeGrid + this.gap)), dy + (y * (grid.sizeGrid + this.gap)), this.height * grid.grid[x][y] - 1);
+                    cube.position.set(dx + (x * (grid.size.bloc.x + this.gap)), dy + (y * (grid.size.bloc.x + this.gap)), this.height * grid.grid[x][y] - 1);
                     this.result.push(cube);
                 }
 

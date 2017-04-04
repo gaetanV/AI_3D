@@ -80,8 +80,8 @@ sceneFactory.prototype.buildSphere = function () {
 sceneFactory.prototype.buildHorses = function (matrix) {
     var horses = new BUILD.object.collection(this.horses,horse, new BUILD.matrix.resolve(this.horses,this.decor,this.errorsFactory), matrix,this.errorsFactory );
     horses.add(new THREE.Vector3(5, 500.4, 0));
-    horses.add(new THREE.Vector3(200, -100, 0));
-    horses.add(new THREE.Vector3(500, -100, 0));
+    //horses.add(new THREE.Vector3(200, -100, 0));
+    //horses.add(new THREE.Vector3(500, -100, 0));
     return  horses;
     
 }

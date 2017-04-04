@@ -9,10 +9,10 @@ BUILD.matrix.build = function (MATERIAL) {
         }
     });
 
-    return function (materialProperty, matrix ,options) {
-        
-        var x = matrix.matrix;
-        var y = x;
+    return function (materialProperty, matrix, options) {
+
+        var x = matrix.x;
+        var y = matrix.y;
 
         var material = materialProperty.material ? materialProperty.material : MATERIAL.get("matrix_default").material;
 
@@ -22,18 +22,16 @@ BUILD.matrix.build = function (MATERIAL) {
         // ADD VERTICES
         for (var i = 0; i < x; i++) {
             for (var j = 0; j < y; j++) {
-
-                geometry.vertices.push(matrix.grid[i][j]);
+                geometry.vertices.push(matrix.matrix[i][j]);
             }
         }
-
         // FILLING FACES
         for (var i = 0; i < (x - 1); i++) {
             for (var j = 0; j < (y - 1); j++) {
-                var point1 = j + (x) * i;
-                var point2 = j + 1 + (x) * i;
-                var point3 = j + 1 + ((x) * (i + 1));
-                var point4 = j + ((x) * (i + 1));
+                var point1 = i + j * x;
+                var point2 = point1 + 1;
+                var point4 = point1 + x;
+                var point3 = point4 + 1;
                 geometry.faces.push(new THREE.Face3(point1, point2, point4));
                 geometry.faces.push(new THREE.Face3(point2, point3, point4));
                 var uvs = [];

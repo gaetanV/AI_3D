@@ -47,13 +47,11 @@ function core(domID) {
     this.sceneFactory = new sceneFactory(this.scene);
     this.sceneFactory.buildSphere();
     this.sun = this.sceneFactory.buildSun(new THREE.Vector3(0, 0, 700));
-   
-    this.matrix = new BUILD.matrix(10,1000,{
-        maxHeight:200
-    });
+    var grid = new BUILD.grid.generator(1000,200,10,10);
+  
+     this.matrix = new BUILD.matrix(grid,3);
     
     
-
     this.sceneFactory.buildFloor(this.matrix);
     this.horses = this.sceneFactory.buildHorses(this.matrix);
     this.render();
