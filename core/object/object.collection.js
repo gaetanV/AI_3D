@@ -10,10 +10,16 @@ BUILD.object.collection = function () {
     }
 
     collection.prototype.add = function (position) {
-        var pModel = new this.model(position, this.matrix, this.resolve, this.errors);
+     
+        var pModel =  this.model.clone(this.matrix, this.resolve, this.errors);
+ 
+        if(position){
+            pModel.model.position.set(position.x,position.y,position.z);
+        }
+
         this.collectionFactory.add(pModel.model);
         this.collection.push(pModel);
-
+        return pModel;
     }
 
     collection.prototype.animate = function () {

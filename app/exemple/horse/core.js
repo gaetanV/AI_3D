@@ -49,9 +49,9 @@ function core(domID) {
     this.sun = this.sceneFactory.buildSun(new THREE.Vector3(0, 0, 700));
     var grid = new BUILD.grid.generator(1000,200,10,10);
   
-     this.matrix = new BUILD.matrix(grid,3);
+    this.matrix = new BUILD.matrix(grid,3);
     
-    
+
     this.sceneFactory.buildFloor(this.matrix);
     this.horses = this.sceneFactory.buildHorses(this.matrix);
     this.render();

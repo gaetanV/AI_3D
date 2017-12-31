@@ -3,8 +3,8 @@ function core(domID) {
     // CAMERA
     var camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 10000);
     camera.rotation.x = 0.65;
-    camera.position.z = 800;
-    camera.position.y = -1000;
+    camera.position.z = 600;
+    camera.position.y = -600;
     camera.position.x = 0;
     this.camera = camera;
 
@@ -34,7 +34,13 @@ function core(domID) {
     // SCENE
     this.scene = new THREE.Scene();
     this.sceneFactory = new sceneFactory(this.scene);
-    this.sceneFactory.map();
+    var matrix = this.sceneFactory.map();
+    var layer = this.sceneFactory.buildLayer(matrix.grid);
+
+
+    this.parrots = this.sceneFactory.buildParrots(matrix,layer);
+    this.sceneFactory.buildTente(matrix,layer);
+    this.sceneFactory.buildTree(matrix,layer);
     this.sceneFactory.lights();
     this.render();
 
@@ -53,6 +59,7 @@ core.prototype.render = function () {
     window.requestAnimationFrame(function () {
         this.render();
     }.bind(this));
+    this.parrots.animate();
     this.stats && (this.stats.update());
     this.renderer.render(this.scene, this.camera);
 }

@@ -1,4 +1,3 @@
-
 BUILD.matrix.resolve = function () {
 
     function resolve(horses, decor, errorsFactory) {

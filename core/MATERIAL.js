@@ -6,6 +6,7 @@ MATERIAL = function () {
         texture: {},
         material: {},
         sound: {},
+        modelObjmtl: {},
     }
 
     var complete = {}
@@ -14,6 +15,7 @@ MATERIAL = function () {
         this.modelJson = {};
         this.material = {};
         this.sound = {};
+        this.modelObjmtl = {};
     }
 
     return {
@@ -25,6 +27,9 @@ MATERIAL = function () {
                         break;
                     case "modelJson":
                         tasks.modelJson[entity] = option[i];
+                        break;
+                    case "modelObjmtl":
+                        tasks.modelObjmtl[entity] = option[i];
                         break;
                     case "material":
                         tasks.material[entity] = option[i];
@@ -47,7 +52,7 @@ MATERIAL = function () {
         boot: (resolve) => {
             firstPass(resolve);
             function  firstPass(resolve) {
-                var size = Object.keys(tasks.texture).length + Object.keys(tasks.modelJson).length + Object.keys(tasks.sound).length;
+                var size = Object.keys(tasks.texture).length + Object.keys(tasks.modelObjmtl).length + Object.keys(tasks.modelJson).length + Object.keys(tasks.sound).length;
                 size === 0 && secondPass(resolve);
                 function* thread() {
                     var index = 0;
@@ -63,7 +68,6 @@ MATERIAL = function () {
                 }
               
                 for (var a in tasks.texture) {
-
                     TOOLS.loader.texture(tasks.texture[a]).then(function (textureCallBack) {
                         !complete[this.a] && (complete[this.a] = new result());
                         complete[this.a].texture = textureCallBack;
@@ -81,8 +85,20 @@ MATERIAL = function () {
                         }
                     }.bind({a: a}));
                 }
+                for (var a in tasks.modelObjmtl) {   
+                    TOOLS.loader.objmtl(tasks.modelObjmtl[a]).then(function (geometryCallBack) {
+                        !complete[this.a] && (complete[this.a] = new result());
+                        complete[this.a].modelObjmtl = geometryCallBack;
+                        if (iterator.next().done === true) {
+                            secondPass(resolve);
+                        }
+                    }.bind({a: a}));
+                }
+
+
             }
             function  secondPass(resolve) {
+                console.log("secondPass");
                 var size = Object.keys(tasks.material).length;
                 size === 0 && resolve();
                 function* thread() {

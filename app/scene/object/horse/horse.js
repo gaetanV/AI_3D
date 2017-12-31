@@ -10,25 +10,10 @@ MATERIAL.set(horse, {
     },
 });
 
-function horse(position, matrix, resolver, errorsFactory) {
+function horseFactory() {
 
     this.jsonModel = MATERIAL.get(horse).modelJson;
     this.material = MATERIAL.get(horse).material;
-
-    this.matrix = matrix;
-    this.resolver = resolver;
-    this.errors = errorsFactory;
-
-    this.selfCollision = false;
-    this.ZMove = true;
-    this.etat = 0;
-
-    //SPEED
- 
-    this.move = {
-        x: 0,
-        y: 0,
-    };
 
     // LOAD THE MODEL
     var animatedMesh;
@@ -39,13 +24,40 @@ function horse(position, matrix, resolver, errorsFactory) {
     animatedMesh.rotation.y = Math.PI / 2;
     var group = new THREE.Object3D();
     group.add(animatedMesh);
-    group.model = animatedMesh;
-    group.obj = this;
-    group.position.set(position.x, position.y, position.z);
+    group.position.set(0, 0, 0);
 
     this.model = group;
 
+}
+
+horseFactory.prototype.clone = function (matrix, resolver, errorsFactory) {
+    return new horse(
+        this.model.clone(),
+        matrix, resolver, errorsFactory
+    );
+
+}
+
+function horse(model, 
+               matrix, resolver, errorsFactory) {
+
+    this.model = model;      
+ 
+    this.selfCollision = false;
+    this.ZMove = true;
+    this.etat = 0;
+
+    //SPEED
     
+    this.move = {
+        x: 0,
+        y: 0,
+    };      
+
+    this.matrix = matrix;
+    this.resolver = resolver;
+    this.errors = errorsFactory;
+
     this.object = new BUILD.matrix.object(this.matrix, this.model,this.move,{
         physical: true,
         Delta: 3,
@@ -54,10 +66,14 @@ function horse(position, matrix, resolver, errorsFactory) {
         Friction: 100
     });
 
-    this.animated = new BUILD.object.animate(animatedMesh, 0, 1000, 14);
+    
     this.goal =  new BUILD.object.goal(new THREE.Vector3(0, 0, 0));
     this.cmp = 0;
-    
+
+    this.animated = new BUILD.object.animate(model.children[0], 0, 1000, 14);
+
+    this.model.model = model.children[0];
+    this.model.obj = this;
 }
 
 horse.prototype.setGoal = function (position) {

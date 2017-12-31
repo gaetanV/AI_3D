@@ -17,9 +17,14 @@ GRID.sh
 Crédit
 ---------------------------------------------
 
-3D models are under Creative Commons : http://ro.me 
+3D models are under Creative Commons : 
+http://ro.me 
 - parot.js
 - horses.js
+
+ https://free3d.com
+ - tente.obj
+ - tree.obj
 
 Sounds are free : http://www.universal-soundbank.com/
 
